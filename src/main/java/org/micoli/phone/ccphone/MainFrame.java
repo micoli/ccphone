@@ -76,6 +76,7 @@ public class MainFrame implements WindowListener, ActionListener {
 	private SystemTray tray = null;
 	private TrayIcon trayIcon;
 	private DraggableWindow dragger;
+	Server server;
 
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -123,12 +124,9 @@ public class MainFrame implements WindowListener, ActionListener {
 
 	}*/
 
+
 	public MainFrame(final String[] args) {
 		Server.run();
-		// launchMsgPackServer();
-	}
-
-	public void MainFrame2(final String[] args) {
 		String peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
 			peersHome = args[0];

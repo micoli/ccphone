@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class DraggableWindow {
+
 	private JFrame mainFrame;
 	private Component fComponent;
 	private int dX;
