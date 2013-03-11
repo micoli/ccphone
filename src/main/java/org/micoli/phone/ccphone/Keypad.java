@@ -30,8 +30,6 @@ import javax.swing.JPanel;
 
 import org.micoli.phone.ccphone.callFrames.CallFrame;
 
-
-
 public class Keypad extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;

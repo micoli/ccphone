@@ -20,12 +20,17 @@ public class Server {
 	static Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
 	static EventBus eb;
-	static String topicAddress = "topic";
+	static String guiEventAddress = "topic";
+	static String actionAddress = "action";
 
+	public static void publishGui(JsonObject jsonObject){
+		eb.publish(guiEventAddress, jsonObject);
+	}
 
 	public static void run() {
 		log.info("start");
 		vertx = Vertx.newVertx("localhost");
+		eb = vertx.eventBus();
 
 		Handler<Message<JsonObject>> myHandler = new Handler<Message<JsonObject>>() {
 			public void handle(Message<JsonObject> message) {
@@ -36,7 +41,7 @@ public class Server {
 			}
 		};
 
-		vertx.eventBus().registerHandler(topicAddress, myHandler);
+		eb.registerHandler(guiEventAddress, myHandler);
 
 		HttpServer server = vertx.createHttpServer();
 
@@ -44,7 +49,7 @@ public class Server {
 			public void handle(HttpServerRequest req) {
 				System.out.println("path " + req.path);
 				if (req.path.equals("/pub")) {
-					vertx.eventBus().publish(topicAddress, "test message published");
+					eb.publish(guiEventAddress, "test message published");
 					req.response.sendFile("src/main/resources/eventbus/null.html");
 				}
 
@@ -74,7 +79,7 @@ public class Server {
 					ws.dataHandler(new Handler<Buffer>() {
 						public void handle(Buffer data) {
 							System.out.println("websocket " + data.toString());
-							vertx.eventBus().publish(topicAddress, data);
+							eb.publish(guiEventAddress, data);
 							// ws.writeTextFrame(data.toString());
 						}
 					});

@@ -70,7 +70,7 @@ public class MainFrame implements WindowListener, ActionListener {
 	private JButton actionButton;
 	private JLabel statusLabel;
 
-	private EventManager eventManager;
+	private AsyncEventManager eventManager;
 	private Registration registration;
 	private Logger logger;
 	private SystemTray tray = null;
@@ -125,7 +125,6 @@ public class MainFrame implements WindowListener, ActionListener {
 
 
 	public MainFrame(final String[] args) {
-		Server.run();
 		String peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
 			peersHome = args[0];
@@ -210,13 +209,15 @@ public class MainFrame implements WindowListener, ActionListener {
 	}
 
 	private void launchThreads(final String[] args) {
+		Server.run();
+
 		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				String peersHome = Utils.DEFAULT_PEERS_HOME;
 				if (args.length > 0) {
 					peersHome = args[0];
 				}
-				eventManager = new EventManager(MainFrame.this, peersHome, logger);
+				eventManager = new AsyncEventManager(MainFrame.this, peersHome, logger);
 				try {
 					eventManager.register();
 				} catch (SipUriSyntaxException e) {
