@@ -1,0 +1,19 @@
+option java_generic_services = true;
+
+option java_package = "org.micoli.phone.ccphone.remote.messages";
+option java_outer_classname = "PingPong";
+
+message Ping {
+	required int32 processingTime = 1;
+	required int32 pongDataLength = 2;
+}
+
+message Pong {
+	required bytes pongData = 1;
+}
+
+service PingPongService {
+	rpc ping(Ping) returns (Pong);
+	rpc fail(Ping) returns (Pong);
+}
+
