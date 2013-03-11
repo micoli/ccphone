@@ -66,10 +66,10 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 
 	private UserAgent userAgent;
 	private MainFrame mainFrame;
-	private AccountFrame accountFrame;
 	private Map<String, CallFrame> callFrames;
 	private boolean closed;
 	private Logger logger;
+	private AccountFrame accountFrame;
 
 	public EventManager(MainFrame mainFrame, String peersHome, Logger logger) {
 		this.mainFrame = mainFrame;

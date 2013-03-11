@@ -75,7 +75,6 @@ public class MainFrame implements WindowListener, ActionListener {
 	private Logger logger;
 	private SystemTray tray = null;
 	private TrayIcon trayIcon;
-	private DraggableWindow dragger;
 	Server server;
 
 	public static void main(final String[] args) {
@@ -185,7 +184,7 @@ public class MainFrame implements WindowListener, ActionListener {
 
 		launchThreads(args);
 
-		dragger = new DraggableWindow(mainFrame);
+		new DraggableWindow(mainFrame);
 		// initializeWindowDragger();
 		initializeWindow();
 		initTray();

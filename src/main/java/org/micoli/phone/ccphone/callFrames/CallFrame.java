@@ -64,6 +64,7 @@ public class CallFrame implements ActionListener, WindowListener {
 	private CallFrameListener callFrameListener;
 	private SipRequest sipRequest;
 
+	@SuppressWarnings("restriction")
 	public CallFrame(String remoteParty, String id, CallFrameListener callFrameListener, Logger logger) {
 		INIT = new CallFrameStateInit(id, this, logger);
 		UAC = new CallFrameStateUac(id, this, logger);

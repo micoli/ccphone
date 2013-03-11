@@ -37,7 +37,6 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 /**
  * AccountFrame, edited with NetBeans IDE.
- * 
  * @author yohann
  */
 public class AccountFrame extends javax.swing.JFrame {
