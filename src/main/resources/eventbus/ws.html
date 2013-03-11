@@ -1,0 +1,77 @@
+<!--
+
+This example adapted from Netty project
+
+ * Copyright 2010 Red Hat, Inc.
+ *
+ * Red Hat licenses this file to you under the Apache License, version 2.0
+ * (the "License"); you may not use this file except in compliance with the
+ * License.  You may obtain a copy of the License at:
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+-->
+
+<html>
+<head><title>Web Socket Test</title></head>
+<body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="http://jquery-json.googlecode.com/svn/trunk/build/jquery.json.min.js"></script>
+<script>
+$(document).ready(function(){
+	var socket;
+	if (window.WebSocket) {
+		socket = new WebSocket("ws://localhost:8080/eventbus");
+		socket.onmessage = function(event) {
+			eval('var tt = '+event.data);
+			$('#subscribed').append($("<code>").text("Address:" + tt.body.text));
+			$('#subscribed').append($("</code><br>"));
+		}
+		socket.onopen = function(event) {
+			$('#subscribed').append($("<code>").text("Web Socket opened"));
+			$('#subscribed').append($("</code><br>"));
+			send('register','aaa');
+		};
+		socket.onclose = function(event) {
+			$('#subscribed').append($("<code>").text("Web Socket closed"));
+			$('#subscribed').append($("</code><br>"));
+		};
+	} else {
+		alert("Your browser does not support Websockets. (Use Chrome)");
+	}
+	$('#tosend').click(function(){
+		send('publish','aaa',$('#tomessage').val());
+	});
+
+	function send(type,address,message) {
+		if (!window.WebSocket) {
+			return;
+		}
+		if (socket.readyState == WebSocket.OPEN) {
+			var toSend = {
+				type		: type,
+				address		: address,
+				body		: {
+					text		: message
+				}
+			}
+			socket.send($.toJSON(toSend));
+		} else {
+			alert("The socket is not open.");
+		}
+	}
+});
+</script>
+<form onsubmit="return false;">
+	<input type="text" name="message" id="tomessage" value="Hello, World!"/>
+	<input type="button" value="Send Web Socket Data" id="tosend"/>
+	<div id="subscribed" style="width: 400px; height: 205px;"></div>
+</form>
+</body>
+</html>
