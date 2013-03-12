@@ -1,10 +1,20 @@
+<!DOCTYPE html>
 <html>
 	<head>
-	<title></title>
+		<title>extStomp Over WebSocket</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-2.2.1/resources/css/ext-all.css" />
+		<script type="text/javascript" src="http://cdn.sencha.io/ext-2.2.1/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript" src="http://cdn.sencha.io/ext-2.2.1/ext-all-debug.js"></script>
+		<script type="text/javascript" src="Ext.ux.data.PagingMemory.js"></script>
+		<script type="text/javascript" src="extvertx.js"></script>
+
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 		<script src="http://cdn.sockjs.org/sockjs-0.3.4.min.js"></script>
 		<script src="http://jquery-json.googlecode.com/svn/trunk/build/jquery.json.min.js"></script>
 		<script src="vertxbus.js"></script>
+
+
 		<style>
 		.box {
 			background-color: #F0F0F0;
@@ -96,53 +106,56 @@
 		</script>
 	</head>
 	<body>
-		<div id="send" class="box"
-			style="position: absolute; left: 0px; top: 0px">
+		<div id="mainPanel" style="width:1024x;"></div>
+		<div id="mainPanelHTML" style="width:1024x;position:absolute;top:500px">
+			<div id="send" class="box"
+				style="position: absolute; left: 0px; top: 0px">
 
-			<form onsubmit="return false;">
-				Address:<input type="text" id="sendAddress" value="topic" /><br>
-				Message:<input type="text" id="sendMessage" value="Hello, World!" />
-				<input type="button" id="sendButton" value="Send message" />
-			</form>
+				<form onsubmit="return false;">
+					Address:<input type="text" id="sendAddress" value="topic" /><br>
+					Message:<input type="text" id="sendMessage" value="Hello, World!" />
+					<input type="button" id="sendButton" value="Send message" />
+				</form>
 
-			<br> Sent messages:<br>
+				<br> Sent messages:<br>
 
-			<div id="sent" class="innerbox" style="width: 400px; height: 205px;">
+				<div id="sent" class="innerbox" style="width: 400px; height: 205px;">
+				</div>
 			</div>
-		</div>
 
-		<div id="subscribe" class="box"
-			style="position: absolute; left: 450px; top: 0px">
+			<div id="subscribe" class="box"
+				style="position: absolute; left: 450px; top: 0px">
 
-			<form onsubmit="return false;">
-				Address:<input type="text" id="subscribeAddress" value="topic" /> <input
-					type="button" id="subscribeButton" value="Subscribe" />
-			</form>
+				<form onsubmit="return false;">
+					Address:<input type="text" id="subscribeAddress" value="topic" /> <input
+						type="button" id="subscribeButton" value="Subscribe" />
+				</form>
 
-			<br> Subscriptions:<br>
+				<br> Subscriptions:<br>
 
-			<div id="subscribed" class="innerbox"
-				style="width: 400px; height: 230px;"></div>
-		</div>
+				<div id="subscribed" class="innerbox"
+					style="width: 400px; height: 230px;"></div>
+			</div>
 
-		<br>
+			<br>
 
-		<div id="receive" class="box"
-			style="position: absolute; left: 0px; top: 350px">
+			<div id="receive" class="box"
+				style="position: absolute; left: 0px; top: 350px">
 
-			Received messages:<br>
+				Received messages:<br>
 
-			<div id="received" class="innerbox"
-				style="width: 400px; height: 275px;"></div>
+				<div id="received" class="innerbox"
+					style="width: 400px; height: 275px;"></div>
 
-		</div>
+			</div>
 
-		<div id="status" class="box"
-			style="position: absolute; left: 450px; top: 350px">
-			<input type="button" id="connectButton" value="Open connection" /><br>
-			<input type="button" id="closeButton" value="Close connection" /><br>
-			Connection Status:&nbsp;
-			<div id="status_info">Not connected</div>
+			<div id="status" class="box"
+				style="position: absolute; left: 450px; top: 350px">
+				<input type="button" id="connectButton" value="Open connection" /><br>
+				<input type="button" id="closeButton" value="Close connection" /><br>
+				Connection Status:&nbsp;
+				<div id="status_info">Not connected</div>
+			</div>
 		</div>
 	</body>
 </html>

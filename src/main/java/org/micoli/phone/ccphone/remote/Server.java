@@ -1,5 +1,8 @@
 package org.micoli.phone.ccphone.remote;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,25 +51,23 @@ public class Server {
 		server.requestHandler(new Handler<HttpServerRequest>() {
 			public void handle(HttpServerRequest req) {
 				System.out.println("path " + req.path);
-				if (req.path.equals("/pub")) {
+				String internalPath = req.path;
+				String documentRoot = "src/main/resources/eventbus";
+
+				if (internalPath.equals("/pub")) {
 					eb.publish(guiEventAddress, "test message published");
 					req.response.sendFile("src/main/resources/eventbus/null.html");
 				}
+				if (internalPath.equals("/")){
+					internalPath = "/index.html";
+				}
+				System.out.println(documentRoot+internalPath);
 
-				if (req.path.equals("/"))
-					req.response.sendFile("src/main/resources/eventbus/index.html");
-
-				if (req.path.equals("/vertxbusws.js"))
-					req.response.sendFile("src/main/resources/eventbus/vertxbusws.js");
-
-				if (req.path.equals("/indexws.html"))
-					req.response.sendFile("src/main/resources/eventbus/indexws.html");
-
-				if (req.path.endsWith("/vertxbus.js"))
-					req.response.sendFile("src/main/resources/eventbus/vertxbus.js");
-
-				if (req.path.endsWith("/ws.html"))
-					req.response.sendFile("src/main/resources/eventbus/ws.html");
+				File file = new File(documentRoot+internalPath);
+				if (!file.exists()){
+					internalPath = "/404.html";
+				}
+				req.response.sendFile(documentRoot+internalPath);
 			}
 		}).websocketHandler(new Handler<ServerWebSocket>() {
 			public void handle(final ServerWebSocket ws) {
