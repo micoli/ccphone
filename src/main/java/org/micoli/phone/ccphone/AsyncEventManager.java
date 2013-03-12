@@ -21,6 +21,7 @@ package org.micoli.phone.ccphone;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -79,10 +80,8 @@ public class AsyncEventManager implements SipListener {
 		// create sip stack
 		GUIActionManager.scan(this);
 		try {
-			//userAgent = new ServerUserAgent(this, peersHome, logger);
-			System.out.println("voiddddd");
-		//} catch (SocketException e) {
-		} catch (Exception e) {
+			userAgent = new ServerUserAgent(this, peersHome, logger);
+		} catch (SocketException e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					JOptionPane.showMessageDialog(null, "Peers sip port " + "unavailable, about to leave", "Error", JOptionPane.ERROR_MESSAGE);
