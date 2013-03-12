@@ -19,23 +19,29 @@
 
 package org.micoli.phone.ccphone.callFrames;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipResponse;
+
+import org.micoli.phone.ccphone.remote.Server;
+import org.vertx.java.core.json.JsonArray;
+import org.vertx.java.core.json.JsonObject;
 
 public class CallFrameStateUac extends CallFrameState {
 
 	public CallFrameStateUac(String id, CallFrame callFrame, Logger logger) {
 		super(id, callFrame, logger);
-		callPanel = new JPanel();
-		callPanel.add(new JLabel("Calling"));
-		JButton hangupButton = new JButton("Hangup");
-		hangupButton.setActionCommand(CallFrame.HANGUP_ACTION_COMMAND);
-		hangupButton.addActionListener(callFrame);
-		callPanel.add(hangupButton);
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.putString("eventName", "CallFrameStateUac");
+		jsonObject.putString("text", "calling");
+		jsonObject.putArray("actionAllowed", new JsonArray().add("hangup"));
+		Server.publishGui(jsonObject);
+
+		//callPanel = new JPanel();
+		//callPanel.add(new JLabel("Calling"));
+		//JButton hangupButton = new JButton("Hangup");
+		//hangupButton.setActionCommand(CallFrame.HANGUP_ACTION_COMMAND);
+		//hangupButton.addActionListener(callFrame);
+		//callPanel.add(hangupButton);
 	}
 
 	@Override

@@ -70,7 +70,7 @@ public class MainFrame implements WindowListener, ActionListener {
 	private JButton actionButton;
 	private JLabel statusLabel;
 
-	private AsyncEventManager eventManager;
+	private AsyncEventManager eventManager ;
 	private Registration registration;
 	private Logger logger;
 	private SystemTray tray = null;
@@ -102,10 +102,8 @@ public class MainFrame implements WindowListener, ActionListener {
 					svr.listen(1985);
 					loop.join();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -218,6 +216,7 @@ public class MainFrame implements WindowListener, ActionListener {
 					peersHome = args[0];
 				}
 				eventManager = new AsyncEventManager(MainFrame.this, peersHome, logger);
+
 				try {
 					eventManager.register();
 				} catch (SipUriSyntaxException e) {

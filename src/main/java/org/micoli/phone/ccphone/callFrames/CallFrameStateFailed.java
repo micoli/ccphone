@@ -19,22 +19,25 @@
 
 package org.micoli.phone.ccphone.callFrames;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import net.sourceforge.peers.Logger;
+
+import org.micoli.phone.ccphone.remote.Server;
+import org.vertx.java.core.json.JsonObject;
 
 public class CallFrameStateFailed extends CallFrameState {
 
 	public CallFrameStateFailed(String id, CallFrame callFrame, Logger logger) {
 		super(id, callFrame, logger);
-		callPanel = new JPanel();
-		callPanel.add(new JLabel("Failed"));
-		JButton closeButton = new JButton("Close");
-		closeButton.setActionCommand(CallFrame.CLOSE_ACTION_COMMAND);
-		closeButton.addActionListener(callFrame);
-		callPanel.add(closeButton);
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.putString("eventName", "CallFrameStateFailed");
+		Server.publishGui(jsonObject);
+
+//		callPanel = new JPanel();
+//		callPanel.add(new JLabel("Failed"));
+//		JButton closeButton = new JButton("Close");
+//		closeButton.setActionCommand(CallFrame.CLOSE_ACTION_COMMAND);
+//		closeButton.addActionListener(callFrame);
+//		callPanel.add(closeButton);
 	}
 
 	@Override

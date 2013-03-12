@@ -17,7 +17,7 @@ import org.vertx.java.core.sockjs.SockJSServer;
 
 public class Server {
 	private static Logger log = LoggerFactory.getLogger("server");
-	static Vertx vertx;
+	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
 	static EventBus eb;
 	static String guiEventAddress = "topic";
