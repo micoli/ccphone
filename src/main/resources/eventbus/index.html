@@ -43,8 +43,7 @@
 					eb.registerHandler(address, function(msg, replyTo) {
 						console.log(msg);
 						$('#received').append("Address:<b>" + address + "</b><br/>"
-											+ "Message:<b>"
-											+ $.toJSON(msg)
+											+ "Message:<b>" + $.toJSON(msg)
 											+ "</b><br/>");
 					});
 					$('#subscribed').append($("<code>").text("Address:" + address));
