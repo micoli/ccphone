@@ -19,15 +19,10 @@
 
 package org.micoli.phone.ccphone.registrations;
 
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import net.sourceforge.peers.Logger;
 
 import org.micoli.phone.ccphone.remote.Server;
 import org.vertx.java.core.json.JsonObject;
-
-import net.sourceforge.peers.Logger;
 
 public class RegistrationStateRegistering extends RegistrationState {
 

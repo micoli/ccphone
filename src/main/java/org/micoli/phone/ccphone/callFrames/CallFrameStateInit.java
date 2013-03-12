@@ -21,6 +21,9 @@ package org.micoli.phone.ccphone.callFrames;
 
 import javax.swing.JFrame;
 
+import org.micoli.phone.ccphone.remote.Server;
+import org.vertx.java.core.json.JsonObject;
+
 import net.sourceforge.peers.Logger;
 
 public class CallFrameStateInit extends CallFrameState {
@@ -31,18 +34,24 @@ public class CallFrameStateInit extends CallFrameState {
 
 	@Override
 	public void callClicked() {
-		callFrame.setState(callFrame.UAC);
-		JFrame frame = callFrame.getFrame();
-		callFrame.setCallPanel(callFrame.UAC.callPanel);
-		frame.setVisible(true);
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.putString("eventName", "callClicked");
+		Server.publishGui(jsonObject);
+		//callFrame.setState(callFrame.UAC);
+		//JFrame frame = callFrame.getFrame();
+		//callFrame.setCallPanel(callFrame.UAC.callPanel);
+		//frame.setVisible(true);
 	}
 
 	@Override
 	public void incomingCall() {
-		callFrame.setState(callFrame.UAS);
-		JFrame frame = callFrame.getFrame();
-		callFrame.setCallPanel(callFrame.UAS.callPanel);
-		frame.setVisible(true);
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.putString("eventName", "incomingCall");
+		Server.publishGui(jsonObject);
+		//callFrame.setState(callFrame.UAS);
+		//JFrame frame = callFrame.getFrame();
+		//callFrame.setCallPanel(callFrame.UAS.callPanel);
+		//frame.setVisible(true);
 	}
 
 }
