@@ -38,8 +38,7 @@ public class Server {
 			public void handle(Message<JsonObject> message) {
 				System.out.println("Server event due to registration : ["
 						+ message.body.getString("text") + "]\n"
-						+ message.body.toString());// + " "+
-													// event.replyAddress);
+						+ message.body.toString());
 			}
 		};
 

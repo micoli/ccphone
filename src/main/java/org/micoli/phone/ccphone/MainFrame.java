@@ -61,14 +61,10 @@ public class MainFrame {
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				createAndShowGUI(args);
+				JFrame.setDefaultLookAndFeelDecorated(false);
+				new MainFrame(args);
 			}
 		});
-	}
-
-	private static void createAndShowGUI(String[] args) {
-		JFrame.setDefaultLookAndFeelDecorated(false);
-		new MainFrame(args);
 	}
 
 	public MainFrame(final String[] args) {

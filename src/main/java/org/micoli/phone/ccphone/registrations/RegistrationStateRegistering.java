@@ -15,7 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	Copyright 2010 Yohann Martineau
-*/
+ */
 
 package org.micoli.phone.ccphone.registrations;
 
@@ -26,8 +26,7 @@ import org.vertx.java.core.json.JsonObject;
 
 public class RegistrationStateRegistering extends RegistrationState {
 
-	public RegistrationStateRegistering(String id, Registration registration,
-			Logger logger) {
+	public RegistrationStateRegistering(String id, Registration registration, Logger logger) {
 		super(id, registration, logger);
 	}
 
@@ -39,19 +38,6 @@ public class RegistrationStateRegistering extends RegistrationState {
 		jsonObject.putString("icon", "green.png");
 		jsonObject.putString("text", "Registered");
 		Server.publishGui(jsonObject);
-
-		//JLabel label = registration.label;
-		//URL url = getClass().getResource("green.png");
-//        String folder = MainFrame.class.getPackage().getName().replace(".",
-//                File.separator);
-//        String filename = folder + File.separator + "green.png";
-//        logger.debug("filename: " + filename);
-//        URL url = MainFrame.class.getClassLoader().getResource(filename);
-		/*
-		ImageIcon imageIcon = new ImageIcon(url);
-		label.setIcon(imageIcon);
-		label.setText("Registered");
-		*/
 	}
 
 	@Override
@@ -62,19 +48,6 @@ public class RegistrationStateRegistering extends RegistrationState {
 		jsonObject.putString("icon", "red.png");
 		jsonObject.putString("text", "Registration failed");
 		Server.publishGui(jsonObject);
-
-//        String folder = MainFrame.class.getPackage().getName().replace(".",
-//                File.separator);
-//        URL url = MainFrame.class.getClassLoader().getResource(
-//                folder + File.separator + "red.png");
-		/*
-		JLabel label = registration.label;
-		URL url = getClass().getResource("red.png");
-		logger.debug("image url: " + url);
-		ImageIcon imageIcon = new ImageIcon(url);
-		label.setIcon(imageIcon);
-		label.setText("Registration failed");
-		*/
 	}
 
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -196,7 +197,9 @@ public class AsyncEventManager implements SipListener {
 			logger.error(e.getMessage(), e);
 			return;
 		}
-		Server.publishGui(JsonMapper.sipRequest("setSipRequest",sipRequest));
+		HashMap<String,String> additional = new HashMap<String,String>();
+		additional.put("SipCallId",callId );
+		Server.publishGui(JsonMapper.sipRequest("setSipRequest",sipRequest,additional));
 		//callFrame.setSipRequest(sipRequest);
 		//callFrame.callClicked();
 	}
@@ -230,7 +233,10 @@ public class AsyncEventManager implements SipListener {
 	@GUIAction
 	public synchronized void hangupClicked(Message<JsonObject> message) {
 		//TODO DECODE JsonObject to SipRequest
+		String CallId = message.body.getString("sipcallid");
+
 		SipRequest sipRequest = new SipRequest(null, null);
+		sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(CallId));
 		userAgent.getUac().terminate(sipRequest);
 	}
 	@GUIAction

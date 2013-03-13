@@ -44,6 +44,7 @@ public class AccountFrame extends javax.swing.JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private Logger logger;
+	private String registrationLabel = "";
 
 	/** Creates new form AccountFrame */
 	public AccountFrame(ActionListener actionListener, UserAgent userAgent, Logger logger) {
@@ -51,7 +52,7 @@ public class AccountFrame extends javax.swing.JFrame {
 		this.logger = logger;
 		unregistering = false;
 		initComponents();
-		registration = new Registration(jLabel6, logger);
+		registration = new Registration(registrationLabel, logger);
 	}
 
 	/**
