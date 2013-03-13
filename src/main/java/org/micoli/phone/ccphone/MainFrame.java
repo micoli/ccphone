@@ -22,9 +22,6 @@
 package org.micoli.phone.ccphone;
 
 import java.awt.AWTException;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -35,20 +32,12 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.net.URL;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
@@ -58,17 +47,9 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.Server;
-import org.micoli.phone.tools.DraggableWindow;
 
 
-public class MainFrame implements WindowListener, ActionListener {
-
-	private JFrame mainFrame;
-	private JPanel mainPanel;
-	private JPanel dialerPanel;
-	private JTextField uri;
-	private JButton actionButton;
-	private JLabel statusLabel;
+public class MainFrame {
 
 	private AsyncEventManager eventManager ;
 	private Registration registration;
@@ -90,38 +71,6 @@ public class MainFrame implements WindowListener, ActionListener {
 		new MainFrame(args);
 	}
 
-	/*private void launchMsgPackServer() {
-		final Controller controller = new Controller();
-		final EventLoop loop = EventLoop.defaultEventLoop();
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-				Server svr = new Server();
-				svr.serve(controller);
-				try {
-					System.out.println("to launch");
-					svr.listen(1985);
-					loop.join();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		System.out.println("ok launched");
-		thread.start();
-
-		try {
-			while (eventManager == null) {
-				Thread.sleep(50);
-			}
-		} catch (InterruptedException e) {
-			return;
-		}
-
-	}*/
-
-
 	public MainFrame(final String[] args) {
 		String peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
@@ -130,9 +79,6 @@ public class MainFrame implements WindowListener, ActionListener {
 		logger = new Logger(peersHome);
 
 		String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
-		// lookAndFeelClassName = "ch.randelshofer.quaqua.QuaquaLookAndFeel";
-		// System.setProperty("Quaqua.tabLayoutPolicy", "scroll");
-		// System.setProperty("apple.laf.useScreenMenuBar", "false");
 
 		try {
 			UIManager.setLookAndFeel(lookAndFeelClassName);
@@ -140,70 +86,9 @@ public class MainFrame implements WindowListener, ActionListener {
 			logger.error("cannot change look and feel", e);
 		}
 
-		String title = "";
-		if (!Utils.DEFAULT_PEERS_HOME.equals(peersHome)) {
-			title = peersHome;
-		}
-
-		title += "/Peers: SIP User-Agent";
-
-		mainFrame = new JFrame(title);
-		// mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		mainFrame.addWindowListener(this);
-
-		mainPanel = new JPanel();
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
-
-		dialerPanel = new JPanel();
-
-		uri = new JTextField("", 15);
-		uri.addActionListener(this);
-
-		actionButton = new JButton("Call");
-		actionButton.addActionListener(this);
-
-		dialerPanel.add(uri);
-		dialerPanel.add(actionButton);
-		dialerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		statusLabel = new JLabel(title);
-		statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		Border border = BorderFactory.createEmptyBorder(0, 2, 2, 2);
-		statusLabel.setBorder(border);
-
-		mainPanel.add(dialerPanel);
-		mainPanel.add(statusLabel);
-
-		Container contentPane = mainFrame.getContentPane();
-		contentPane.add(mainPanel);
-
-		registration = new Registration(statusLabel, logger);
-
 		launchThreads(args);
 
-		new DraggableWindow(mainFrame);
-		// initializeWindowDragger();
-		initializeWindow();
 		initTray();
-		mainFrame.pack();
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainFrame.setVisible(true);
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == uri) {
-			if (uri.getText().equalsIgnoreCase("account")) {
-				eventManager.openAccount();
-			} else if (uri.getText().equalsIgnoreCase("quit")) {
-				tray.remove(trayIcon);
-				System.exit(0);
-			} else {
-				eventManager.callClicked("sip:" + uri.getText());
-			}
-		} else if (source == actionButton) {
-			eventManager.callClicked("sip:" + uri.getText());
-		}
 	}
 
 	private void launchThreads(final String[] args) {
@@ -220,7 +105,7 @@ public class MainFrame implements WindowListener, ActionListener {
 				try {
 					eventManager.register();
 				} catch (SipUriSyntaxException e) {
-					statusLabel.setText(e.getMessage());
+					// statusLabel.setText(e.getMessage());
 				}
 			}
 		});
@@ -292,10 +177,8 @@ public class MainFrame implements WindowListener, ActionListener {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MenuItem item = (MenuItem) e.getSource();
-				// TrayIcon.MessageType type = null;
 				System.out.println(item.getLabel());
 				if ("Error".equals(item.getLabel())) {
-					// type = TrayIcon.MessageType.ERROR;
 					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an error message", TrayIcon.MessageType.ERROR);
 
 				} else if ("Warning".equals(item.getLabel())) {
@@ -326,28 +209,8 @@ public class MainFrame implements WindowListener, ActionListener {
 		});
 	}
 
-	private void initializeWindow() {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		mainFrame.setLocationByPlatform(true);
-		mainFrame.setLocation((int) ((screenSize.getWidth() - mainFrame.getWidth()) / 2), 20);
-		mainFrame.setUndecorated(true);
-		mainFrame.setAlwaysOnTop(true);
-		mainFrame.setLocationByPlatform(true);
-		setOpacity(0.6f);
-	}
-
-	@SuppressWarnings("restriction")
-	private void setOpacity(float opacity) {
-		com.sun.awt.AWTUtilities.setWindowOpacity(mainFrame, opacity);
-	}
-
 	public void windowClosed(WindowEvent e) {
 		eventManager.windowClosed();
-	}
-
-	public void setLabelText(String text) {
-		statusLabel.setText(text);
-		mainFrame.pack();
 	}
 
 	public void registerFailed(SipResponse sipResponse) {
@@ -363,7 +226,7 @@ public class MainFrame implements WindowListener, ActionListener {
 	}
 
 	public void socketExceptionOnStartup() {
-		JOptionPane.showMessageDialog(mainFrame, "peers SIP port " + "unavailable, exiting");
+		System.out.println("peers SIP port " + "unavailable, exiting");
 		System.exit(1);
 	}
 

@@ -1,11 +1,72 @@
+Eu = {};
+Eu.sm = {};
+Eu.sm.vertx = {};
+Eu.sm.vertx.eventbus = function(prm){
+	var that=this;
+	that.prm = prm;
+	that.eventbus = new vertx.EventBus(that.prm.url);
+
+	that.eventbus.onopen = that.prm.onOpen;
+	that.eventbus.onclose = that.prm.onClose;
+	return this;
+}
+
+Eu.sm.vertx.eventbus.prototype = {
+	onOpen			: Ext.emptyFn,
+	onClose			: Ext.emptyFn,
+	publish			: function (address,text){
+		if(this.eventbus){
+			this.eventbus.publish(address,text);
+		}
+	},
+	openConn		: function (address,text){
+		if(!this.eventbus){
+			this.eventbus = new vertx.EventBus(this.prm.url)
+		}
+	},
+	closeConn		: function() {
+		if (this.eventbus) {
+			this.eventbus.close();
+		}
+	},
+	subscribe		: function (address,callback){
+		if (this.eventbus) {
+			this.eventbus.registerHandler(address, callback);
+		}
+	},
+
+	debug 			: function(str,title) {
+		console.log("stompClient",title,str)
+	}
+}
+
+
 Ext.onReady(function(){
 	Ext.BLANK_IMAGE_URL='http://www.sencha.com/s.gif';
-	var supported = ("WebSocket" in window);
-	if(!supported) {
-		var msg = "Your browser does not support Web Sockets. This example will not work properly.<br>";
-		msg += "Please use a Web Browser with Web Sockets support (WebKit or Google Chrome).";
-		$("#connect").html(msg);
+
+	var log = function(msg, replyTo) {
+		console.log(msg);
+		addToList($.toJSON(msg),'received');
 	}
+	var extEB = new Eu.sm.vertx.eventbus({
+		url		: "http://localhost:8080/eventbus",
+		onOpen	: function() {
+			Ext.getCmp("lblstatus").setText("Connected");
+			Ext.getCmp("btnconnect").setDisabled(true);
+			Ext.getCmp("btndisconnect").setDisabled(false);
+
+			extEB.subscribe("topic",log);
+			extEB.subscribe("guiaction.testClick",log);
+		},
+		onClose	: function() {
+			Ext.getCmp("lblstatus").setText("disConnected");
+			Ext.getCmp("btnconnect").setDisabled(false);
+			Ext.getCmp("btndisconnect").setDisabled(true);
+			extEb.eventbus = null;
+		}
+	});
+
+	extEB.openConn();
 
 	var eventsStore = new Ext.data.Store({
 		reader: new Ext.data.JsonReader({}, [
@@ -40,16 +101,57 @@ Ext.onReady(function(){
 			tbar		: [{
 				xtype		: 'button',
 				text		: 'connect',
+				id			: 'btnconnect',
 				disabled	: false,
-				handler		: function(){
-
-				}
+				handler		: extEB.openConn
 			},{
 				xtype		: 'button',
 				text		: 'disconnect',
+				id			: 'btndisconnect',
 				disabled	: true,
+				handler		: extEB.closeConn
+			},{
+				xtype		: 'label',
+				id			: 'lblstatus',
+				width		: 60,
+				text		: 'status'
+			},'-',{
+				xtype		: 'label',
+				text		: 'subscribe :'
+			},{
+				xtype		: 'textfield',
+				text		: 'topic',
+				id			: 'textsubscribe'
+			},{
+				xtype		: 'button',
+				text		: 'subscribe',
 				handler		: function(){
-
+					var address = Ext.getCmp('textsubscribe').getValue();
+					extEB.subscribe(address);
+				}
+			},'-',{
+				xtype		: 'label',
+				text		: 'Send (topic/message)'
+			},{
+				xtype		: 'textfield',
+				value		: 'topic',
+				id			: 'topictosend'
+			},{
+				xtype		: 'textfield',
+				id			: 'messagetosend'
+			},{
+				xtype		: 'button',
+				text		: 'subscribe',
+				handler		: function(){
+					var address = Ext.getCmp('topictosend').getValue();
+					var message = Ext.getCmp('messagetosend').getValue();
+					if (extEB) {
+						var json = {
+							text : message
+						};
+						extEB.publish(address, json);
+						addToList($.toJSON(json),'sent');
+					}
 				}
 			}],
 			items		: [{
@@ -65,7 +167,11 @@ Ext.onReady(function(){
 				listeners :{
 					rowclick:function(grid, rowIndex, e) {
 						var p = Ext.getCmp('showMsg');
-						p.tpl.overwrite(p.body,grid.getStore().data.items[rowIndex].data);
+						var data = grid.getStore().data.items[rowIndex].data;
+						p.tpl.overwrite(p.body,{
+							title	: data.title,
+							text	: data.text
+						});
 					}
 				},
 				tbar:[{
@@ -85,34 +191,40 @@ Ext.onReady(function(){
 					'<tpl for=".">',
 					'<div class="search-item">',
 						'<h3><span>{title}</span></h3>',
-						'<pre>{text}</pre>',
+						'<code>{text}</code>',
 					'</div></tpl>'
 				)
 			}]
 		},{
-			xtype	: 'panel',
-			id		: 'extensionpanel',
-			region	: 'center',
-			items	: new Ext.DataView({
-				store		: extenStore,
-				autoHeight	: true,
-				border		: true,
-				autoHeight	: true,
-				multiSelect	: true,
-				overClass	: 'x-view-over',
-				itemSelector: 'div.thumb-wrap',
-				emptyText	: 'No images to display',
-				tpl			: new Ext.XTemplate(
-					'<tpl for=".">',
-						'<div class="thumb-wrap" style="width:160px;height:40px;float:left;border:1px solid black;font: 12px arial;" >',
-						'	<h2>{exten}</h2>',
-							'<span class="x-editable">{str}</span>',
-							'<span class="x-editable">{time}</span>',
-						'</div>',
-					'</tpl>',
-					'<div class="x-clear"></div>'
-				)
-			})
+			xtype		: 'panel',
+			region		: 'center',
+			layout		:'table',
+			layoutConfig: {
+				columns		: 3
+			},
+			items		: [{
+				width		: 100,
+				xtype		: 'panel',
+				frame		: true,
+				items		: [{
+					xtype		: 'label',
+					text		: 'call'
+				},{
+					xtype		: 'textfield',
+					value		: '6004',
+					id			: 'txtcalluri'
+				},{
+					xtype		: 'button',
+					text		: 'call',
+					handler		: function(){
+						extEB.publish('guiaction.callClicked', {
+							uri	:'sip:'+Ext.getCmp('txtcalluri').getValue()+'@192.168.1.72'
+						});
+					}
+				}]
+			},{
+				html		:'1,2'
+			}]
 		}]
 	});
 
@@ -132,71 +244,4 @@ Ext.onReady(function(){
 		}
 		return extenStore.getAt(idx);
 	}
-	var localCacheExtenTimer={};
-	Ext.Ajax.request({
-		url: 'localcache.txt',
-		success: function(result){
-			eval('var res = '+result.responseText+';');
-			extenStore.removeAll();
-			for (var k in res.users){
-				localCacheExtenTimer[res.users[k].exten]=null;
-				extenStore.add([new extenStore.recordType({
-					exten		: res.users[k].exten,
-					data		: {},
-					str			: '-'
-				})]);
-			}
-			extenStore.commitChanges();
-			es = new Eu.sm.Stomp({
-				url				: 'ws://10.33.1.221:61614/stomp',
-				login			: 'guest',
-				password		: 'password',
-				debug			: addToList,
-				subscriptions	: {
-					'/topic/extensions.*' : {
-						1 : {
-							scope : this,
-							callback : function(msg,topic){
-								if(topic=='/topic/extensions.debug'){
-									return;
-								}
-								addToList(msg.body,topic);
-								eval('var dt = '+msg.body);
-								console.log(dt,topic,msg);
-								var record = updateExtenTpl(dt);
-								record.beginEdit();
-								record.set('str',dt.event);
-								if(localCacheExtenTimer[dt.subject]){
-									clearTimeout(localCacheExtenTimer[dt.subject]);
-									localCacheExtenTimer[dt.subject]=null
-									record.set('time','');
-								}
-								record.endEdit();
-								record.commit(false);
-								if(dt.timer){
-									(function() {
-										localCacheExtenTimer[dt.subject] = setInterval(function(){
-											record.beginEdit();
-											record.set('time',Ext.util.Format.dateRenderer('m-d H:i:s')(new Date()));
-											record.endEdit();
-											record.commit(false);
-										},500);
-									})()
-								}else{
-									(function() {
-										setTimeout(function(){
-											record.beginEdit();
-											record.set('str','');
-											record.endEdit();
-											record.commit(false);
-										},1500);
-									})()
-								}
-							}
-						}
-					}
-				}
-			}).connect();
-		}
-	});
 });
