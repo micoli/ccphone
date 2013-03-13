@@ -17,20 +17,18 @@
 	Copyright 2010 Yohann Martineau
 */
 
-package org.micoli.phone.ccphone.registrations;
+package org.micoli.phone.ccphone.call.state;
+
+import org.micoli.phone.ccphone.call.CallFrame;
 
 import net.sourceforge.peers.Logger;
 
-public class RegistrationStateSuccess extends RegistrationState {
+public class CallFrameStateFailed extends CallFrameState {
 
-	public RegistrationStateSuccess(String id, Registration registration, Logger logger) {
-		super(id, registration, logger);
+	public CallFrameStateFailed(String id, CallFrame callFrame, Logger logger) {
+		super(id, callFrame, logger);
 	}
 
-	@Override
-	public void registerSent() {
-		registration.setState(registration.REGISTERING);
-		registration.displayRegistering();
+	public void closeClicked() {
 	}
-
 }

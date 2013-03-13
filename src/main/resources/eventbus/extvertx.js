@@ -43,10 +43,18 @@ Eu.sm.vertx.eventbus.prototype = {
 
 Ext.onReady(function(){
 	Ext.BLANK_IMAGE_URL='http://www.sencha.com/s.gif';
-
+	var SipCallId = 0;
 	var log = function(msg, replyTo) {
 		console.log(msg);
 		addToList($.toJSON(msg),'received');
+		if(msg.eventName){
+			switch (msg.eventName){
+				case "setSipRequest" :
+					SipCallId = msg.SipCallId
+					Ext.getCmp('txtsipcallid').setValue(msg.SipCallId);
+				break;
+			}
+		}
 	}
 	var extEB = new Eu.sm.vertx.eventbus({
 		url		: "http://localhost:8080/eventbus",
@@ -141,7 +149,7 @@ Ext.onReady(function(){
 				id			: 'messagetosend'
 			},{
 				xtype		: 'button',
-				text		: 'subscribe',
+				text		: 'send',
 				handler		: function(){
 					var address = Ext.getCmp('topictosend').getValue();
 					var message = Ext.getCmp('messagetosend').getValue();
@@ -203,7 +211,7 @@ Ext.onReady(function(){
 				columns		: 3
 			},
 			items		: [{
-				width		: 100,
+				width		: 200,
 				xtype		: 'panel',
 				frame		: true,
 				items		: [{
@@ -211,19 +219,37 @@ Ext.onReady(function(){
 					text		: 'call'
 				},{
 					xtype		: 'textfield',
-					value		: '6004',
+					value		: '310',
 					id			: 'txtcalluri'
 				},{
 					xtype		: 'button',
 					text		: 'call',
 					handler		: function(){
 						extEB.publish('guiaction.callClicked', {
-							uri	:'sip:'+Ext.getCmp('txtcalluri').getValue()+'@192.168.1.72'
+							uri	:'sip:'+Ext.getCmp('txtcalluri').getValue()+'@10.33.100.221'
 						});
 					}
 				}]
 			},{
-				html		:'1,2'
+				width		: 200,
+				xtype		: 'panel',
+				frame		: true,
+				items		: [{
+					xtype		: 'label',
+					text		: 'hangup'
+				},{
+					xtype		: 'textfield',
+					value		: '',
+					id			: 'txtsipcallid'
+				},{
+					xtype		: 'button',
+					text		: 'hangup',
+					handler		: function(){
+						extEB.publish('guiaction.hangupClicked', {
+							sipcallid	: Ext.getCmp('txtsipcallid').getValue()
+						});
+					}
+				}]
 			}]
 		}]
 	});

@@ -23,8 +23,7 @@ import net.sourceforge.peers.Logger;
 
 public class RegistrationStateUnregsitered extends RegistrationState {
 
-	public RegistrationStateUnregsitered(String id, Registration registration,
-			Logger logger) {
+	public RegistrationStateUnregsitered(String id, Registration registration, Logger logger) {
 		super(id, registration, logger);
 	}
 

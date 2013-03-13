@@ -17,20 +17,35 @@
 	Copyright 2010 Yohann Martineau
 */
 
-package org.micoli.phone.ccphone.registrations;
+package org.micoli.phone.ccphone.call.state;
+
+import org.micoli.phone.ccphone.call.CallFrame;
 
 import net.sourceforge.peers.Logger;
 
-public class RegistrationStateSuccess extends RegistrationState {
+public class CallFrameStateUas extends CallFrameState {
 
-	public RegistrationStateSuccess(String id, Registration registration, Logger logger) {
-		super(id, registration, logger);
+	public CallFrameStateUas(String id, CallFrame callFrame, Logger logger) {
+		super(id, callFrame, logger);
 	}
 
 	@Override
-	public void registerSent() {
-		registration.setState(registration.REGISTERING);
-		registration.displayRegistering();
+	public void pickupClicked() {
+		callFrame.setState(callFrame.SUCCESS);
+		callFrame.pickup();
+		//callFrame.setCallPanel(callFrame.SUCCESS.callPanel);
+	}
+
+	@Override
+	public void busyHereClicked() {
+		callFrame.setState(callFrame.TERMINATED);
+		callFrame.busyHere();
+	}
+
+	@Override
+	public void remoteHangup() {
+		callFrame.setState(callFrame.REMOTE_HANGUP);
+		//callFrame.setCallPanel(callFrame.REMOTE_HANGUP.callPanel);
 	}
 
 }

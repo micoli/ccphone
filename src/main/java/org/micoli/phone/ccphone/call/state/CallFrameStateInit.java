@@ -17,20 +17,34 @@
 	Copyright 2010 Yohann Martineau
 */
 
-package org.micoli.phone.ccphone.registrations;
+package org.micoli.phone.ccphone.call.state;
+
+import javax.swing.JFrame;
+
+import org.micoli.phone.ccphone.call.CallFrame;
 
 import net.sourceforge.peers.Logger;
 
-public class RegistrationStateSuccess extends RegistrationState {
+public class CallFrameStateInit extends CallFrameState {
 
-	public RegistrationStateSuccess(String id, Registration registration, Logger logger) {
-		super(id, registration, logger);
+	public CallFrameStateInit(String id, CallFrame callFrame, Logger logger) {
+		super(id, callFrame, logger);
 	}
 
 	@Override
-	public void registerSent() {
-		registration.setState(registration.REGISTERING);
-		registration.displayRegistering();
+	public void callClicked() {
+		callFrame.setState(callFrame.UAC);
+		//JFrame frame = callFrame.getFrame();
+		//callFrame.setCallPanel(callFrame.UAC.callPanel);
+		//frame.setVisible(true);
+	}
+
+	@Override
+	public void incomingCall() {
+		callFrame.setState(callFrame.UAS);
+		//JFrame frame = callFrame.getFrame();
+		//callFrame.setCallPanel(callFrame.UAS.callPanel);
+		//frame.setVisible(true);
 	}
 
 }

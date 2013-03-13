@@ -15,17 +15,11 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	Copyright 2010 Yohann Martineau
-*/
+ */
 
 package org.micoli.phone.ccphone.registrations;
 
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-
 import net.sourceforge.peers.Logger;
-
 import org.micoli.phone.ccphone.remote.Server;
 import org.vertx.java.core.json.JsonObject;
 
@@ -36,10 +30,10 @@ public class Registration {
 	public final RegistrationState SUCCESS;
 	public final RegistrationState FAILED;
 
-	protected JLabel label;
+	protected String label;
 	private RegistrationState state;
 
-	public Registration(JLabel label, Logger logger) {
+	public Registration(String label, Logger logger) {
 		this.label = label;
 
 		String id = String.valueOf(hashCode());
@@ -73,17 +67,5 @@ public class Registration {
 		jsonObject.putString("icon", "working.gif");
 		jsonObject.putString("text", "Registering");
 		Server.publishGui(jsonObject);
-//        String folder = MainFrame.class.getPackage().getName().replace(".",
-//                File.separator);
-//        String filename = folder + File.separator + "working.gif";
-//        Logger.debug("filename: " + filename);
-//        URL url = MainFrame.class.getClassLoader().getResource(filename);
-		/*
-		URL url = getClass().getResource("working.gif");
-		ImageIcon imageIcon = new ImageIcon(url);
-		label.setIcon(imageIcon);
-		label.setText("Registering");
-		*/
 	}
-
 }

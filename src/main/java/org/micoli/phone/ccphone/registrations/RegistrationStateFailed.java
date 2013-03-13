@@ -23,8 +23,7 @@ import net.sourceforge.peers.Logger;
 
 public class RegistrationStateFailed extends RegistrationState {
 
-	public RegistrationStateFailed(String id, Registration registration,
-			Logger logger) {
+	public RegistrationStateFailed(String id, Registration registration, Logger logger) {
 		super(id, registration, logger);
 	}
 
