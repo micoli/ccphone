@@ -25,16 +25,9 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
-import org.micoli.phone.ccphone.callFrames.CallFrame;
-import org.micoli.phone.ccphone.callFrames.CallFrameListener;
-
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -49,11 +42,10 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
-import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class EventManager implements SipListener, MainFrameListener, CallFrameListener, ActionListener {
+public class EventManager implements SipListener, ActionListener {
 
 	public static final String PEERS_URL = "http://peers.sourceforge.net/";
 	public static final String PEERS_USER_MANUAL = PEERS_URL + "user_manual";
@@ -65,18 +57,15 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 	public static final String ACTION_DOCUMENTATION = "Documentation";
 
 	private UserAgent userAgent;
-	private MainFrame mainFrame;
-	private Map<String, CallFrame> callFrames;
+	// private Map<String, CallFrame> callFrames;
 	private boolean closed;
 	private Logger logger;
-	private AccountFrame accountFrame;
 
-	public EventManager(MainFrame mainFrame, String peersHome, Logger logger) {
-		this.mainFrame = mainFrame;
+	public EventManager(String peersHome, Logger logger) {
 		this.logger = logger;
-		callFrames = Collections.synchronizedMap(new HashMap<String, CallFrame>());
+		// callFrames = Collections.synchronizedMap(new HashMap<String,
+		// CallFrame>());
 		closed = false;
-		// create sip stack
 		try {
 			userAgent = new UserAgent(this, peersHome, logger);
 		} catch (SocketException e) {
@@ -93,18 +82,12 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 	// sip events
 
 	public void registering(SipRequest sipRequest) {
-		if (accountFrame != null) {
-			accountFrame.registering(sipRequest);
-		}
-		mainFrame.registering(sipRequest);
+		// mainFrame.registering(sipRequest);
 	}
 
 	public synchronized void registerFailed(SipResponse sipResponse) {
 		// mainFrame.setLabelText("Registration failed");
-		if (accountFrame != null) {
-			accountFrame.registerFailed(sipResponse);
-		}
-		mainFrame.registerFailed(sipResponse);
+		// mainFrame.registerFailed(sipResponse);
 	}
 
 	public synchronized void registerSuccessful(SipResponse sipResponse) {
@@ -113,24 +96,21 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 			System.exit(0);
 			return;
 		}
-		if (accountFrame != null) {
-			accountFrame.registerSuccess(sipResponse);
-		}
-		mainFrame.registerSuccessful(sipResponse);
+		// mainFrame.registerSuccessful(sipResponse);
 	}
 
 	public synchronized void calleePickup(SipResponse sipResponse) {
-		CallFrame callFrame = getCallFrame(sipResponse);
-		if (callFrame != null) {
-			callFrame.calleePickup();
-		}
+		// CallFrame callFrame = getCallFrame(sipResponse);
+		// if (callFrame != null) {
+		// callFrame.calleePickup();
+		// }
 	}
 
 	public synchronized void error(SipResponse sipResponse) {
-		CallFrame callFrame = getCallFrame(sipResponse);
-		if (callFrame != null) {
-			callFrame.error(sipResponse);
-		}
+		// CallFrame callFrame = getCallFrame(sipResponse);
+		// if (callFrame != null) {
+		// callFrame.error(sipResponse);
+		// }
 	}
 
 	public synchronized void incomingCall(final SipRequest sipRequest, SipResponse provResponse) {
@@ -139,24 +119,24 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 		SipHeaderFieldValue from = sipHeaders.get(sipHeaderFieldName);
 		final String fromValue = from.getValue();
 		String callId = Utils.getMessageCallId(sipRequest);
-		CallFrame callFrame = new CallFrame(fromValue, callId, this, logger);
-		callFrames.put(callId, callFrame);
-		callFrame.setSipRequest(sipRequest);
-		callFrame.incomingCall();
+		// CallFrame callFrame = new CallFrame(fromValue, callId, this, logger);
+		// callFrames.put(callId, callFrame);
+		// callFrame.setSipRequest(sipRequest);
+		// callFrame.incomingCall();
 	}
 
 	public synchronized void remoteHangup(SipRequest sipRequest) {
-		CallFrame callFrame = getCallFrame(sipRequest);
-		if (callFrame != null) {
-			callFrame.remoteHangup();
-		}
+		// CallFrame callFrame = getCallFrame(sipRequest);
+		// if (callFrame != null) {
+		// callFrame.remoteHangup();
+		// }
 	}
 
 	public synchronized void ringing(SipResponse sipResponse) {
-		CallFrame callFrame = getCallFrame(sipResponse);
-		if (callFrame != null) {
-			callFrame.ringing();
-		}
+		// CallFrame callFrame = getCallFrame(sipResponse);
+		// if (callFrame != null) {
+		// callFrame.ringing();
+		// }
 	}
 
 	// main frame events
@@ -175,18 +155,17 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 
 	public synchronized void callClicked(String uri) {
 		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
-		CallFrame callFrame = new CallFrame(uri, callId, this, logger);
-		callFrames.put(callId, callFrame);
+		// CallFrame callFrame = new CallFrame(uri, callId, this, logger);
+		// callFrames.put(callId, callFrame);
 		SipRequest sipRequest;
 		try {
 			sipRequest = userAgent.getUac().invite(uri, callId);
 		} catch (SipUriSyntaxException e) {
 			logger.error(e.getMessage(), e);
-			mainFrame.setLabelText(e.getMessage());
 			return;
 		}
-		callFrame.setSipRequest(sipRequest);
-		callFrame.callClicked();
+		// callFrame.setSipRequest(sipRequest);
+		// callFrame.callClicked();
 	}
 
 	public synchronized void windowClosed() {
@@ -231,10 +210,10 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 		mediaManager.sendDtmf(digit);
 	}
 
-	private CallFrame getCallFrame(SipMessage sipMessage) {
-		String callId = Utils.getMessageCallId(sipMessage);
-		return callFrames.get(callId);
-	}
+	// private CallFrame getCallFrame(SipMessage sipMessage) {
+	// String callId = Utils.getMessageCallId(sipMessage);
+	// return callFrames.get(callId);
+	// }
 
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
@@ -248,7 +227,6 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 				}
 			};
 		} else if (ACTION_ACCOUNT.equals(action)) {
-			openAccount();
 		} else if (ACTION_PREFERENCES.equals(action)) {
 			runnable = new Runnable() {
 
@@ -283,24 +261,4 @@ public class EventManager implements SipListener, MainFrameListener, CallFrameLi
 			SwingUtilities.invokeLater(runnable);
 		}
 	}
-
-	public void openAccount() {
-		Runnable runnable = null;
-		runnable = new Runnable() {
-
-			public void run() {
-				if (accountFrame == null || !accountFrame.isDisplayable()) {
-					accountFrame = new AccountFrame(EventManager.this, userAgent, logger);
-					accountFrame.setVisible(true);
-				} else {
-					accountFrame.requestFocus();
-				}
-			}
-		};
-		if (runnable != null) {
-			SwingUtilities.invokeLater(runnable);
-		}
-
-	}
-
 }

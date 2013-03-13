@@ -1,7 +1,6 @@
 package org.micoli.phone.ccphone.remote;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;

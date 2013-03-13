@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -46,7 +43,6 @@ import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-import org.micoli.phone.ccphone.callFrames.CallFrame;
 import org.micoli.phone.ccphone.remote.Server;
 import org.micoli.phone.tools.GUIAction;
 import org.micoli.phone.tools.GUIActionManager;
@@ -66,8 +62,7 @@ public class AsyncEventManager implements SipListener {
 	public static final String ACTION_DOCUMENTATION = "Documentation";
 
 	private ServerUserAgent userAgent;
-	private MainFrame mainFrame;
-	private Map<String, CallFrame> callFrames;
+	// private Map<String, CallFrame> callFrames;
 	private boolean closed;
 	private Logger logger;
 	//private AccountFrame accountFrame;
@@ -75,7 +70,8 @@ public class AsyncEventManager implements SipListener {
 	public AsyncEventManager(MainFrame mainFrame, String peersHome, Logger logger) {
 		//this.mainFrame = mainFrame;
 		this.logger = logger;
-		callFrames = Collections.synchronizedMap(new HashMap<String, CallFrame>());
+		// callFrames = Collections.synchronizedMap(new HashMap<String,
+		// CallFrame>());
 		closed = false;
 		// create sip stack
 		GUIActionManager.scan(this);
@@ -187,7 +183,9 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
-	public synchronized void callClicked(String uri) {
+	@GUIAction
+	public synchronized void callClicked(Message<JsonObject> message) {
+		String uri = message.body.getString("uri");
 		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
 		//CallFrame callFrame = new CallFrame(uri, callId, this, logger);
 		//callFrames.put(callId, callFrame);
@@ -196,7 +194,6 @@ public class AsyncEventManager implements SipListener {
 			sipRequest = userAgent.getUac().invite(uri, callId);
 		} catch (SipUriSyntaxException e) {
 			logger.error(e.getMessage(), e);
-			mainFrame.setLabelText(e.getMessage());
 			return;
 		}
 		Server.publishGui(JsonMapper.sipRequest("setSipRequest",sipRequest));
@@ -261,13 +258,13 @@ public class AsyncEventManager implements SipListener {
 		mediaManager.sendDtmf(digit);
 	}
 
-	@GUIAction
+	/*@GUIAction
 	private CallFrame getCallFrame(Message<JsonObject> message) {
 		//TODO DECODE JsonObject to SipRequest
 		SipRequest sipMessage = new SipRequest(null,null);
 		String callId = Utils.getMessageCallId(sipMessage);
 		return callFrames.get(callId);
-	}
+	}*/
 
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
