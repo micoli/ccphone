@@ -53,6 +53,8 @@ import org.micoli.phone.tools.JsonMapper;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
+
+
 public class AsyncEventManager implements SipListener {
 
 	public static final String PEERS_URL = "http://peers.sourceforge.net/";
