@@ -19,33 +19,19 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import org.micoli.phone.ccphone.call.CallFrame;
+import org.micoli.phone.ccphone.call.Call;
 
 import net.sourceforge.peers.Logger;
 
-public class CallFrameStateUas extends CallFrameState {
+public class CallStateTerminated extends CallState {
 
-	public CallFrameStateUas(String id, CallFrame callFrame, Logger logger) {
-		super(id, callFrame, logger);
+	public CallStateTerminated(String id, Call call, Logger logger) {
+		super(id, call, logger);
 	}
 
 	@Override
-	public void pickupClicked() {
-		callFrame.setState(callFrame.SUCCESS);
-		callFrame.pickup();
-		//callFrame.setCallPanel(callFrame.SUCCESS.callPanel);
-	}
-
-	@Override
-	public void busyHereClicked() {
-		callFrame.setState(callFrame.TERMINATED);
-		callFrame.busyHere();
-	}
-
-	@Override
-	public void remoteHangup() {
-		callFrame.setState(callFrame.REMOTE_HANGUP);
-		//callFrame.setCallPanel(callFrame.REMOTE_HANGUP.callPanel);
+	public void calleePickup() {
+		call.hangup();
 	}
 
 }

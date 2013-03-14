@@ -19,32 +19,26 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import javax.swing.JFrame;
-
-import org.micoli.phone.ccphone.call.CallFrame;
+import org.micoli.phone.ccphone.call.Call;
 
 import net.sourceforge.peers.Logger;
 
-public class CallFrameStateInit extends CallFrameState {
+public class CallStateSuccess extends CallState {
 
-	public CallFrameStateInit(String id, CallFrame callFrame, Logger logger) {
-		super(id, callFrame, logger);
+	public CallStateSuccess(String id, Call call, Logger logger) {
+		super(id, call, logger);
 	}
 
 	@Override
-	public void callClicked() {
-		callFrame.setState(callFrame.UAC);
-		//JFrame frame = callFrame.getFrame();
-		//callFrame.setCallPanel(callFrame.UAC.callPanel);
-		//frame.setVisible(true);
+	public void remoteHangup() {
+		call.setState(call.REMOTE_HANGUP);
+		//call.setCallPanel(call.REMOTE_HANGUP.callPanel);
 	}
 
 	@Override
-	public void incomingCall() {
-		callFrame.setState(callFrame.UAS);
-		//JFrame frame = callFrame.getFrame();
-		//callFrame.setCallPanel(callFrame.UAS.callPanel);
-		//frame.setVisible(true);
+	public void hangupClicked() {
+		call.setState(call.TERMINATED);
+		call.hangup();
 	}
 
 }

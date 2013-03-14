@@ -4,10 +4,8 @@ Eu.sm.vertx = {};
 Eu.sm.vertx.eventbus = function(prm){
 	var that=this;
 	that.prm = prm;
-	that.eventbus = new vertx.EventBus(that.prm.url);
+	//that.eventbus = new vertx.EventBus(that.prm.url);
 
-	that.eventbus.onopen = that.prm.onOpen;
-	that.eventbus.onclose = that.prm.onClose;
 	return this;
 }
 
@@ -22,11 +20,14 @@ Eu.sm.vertx.eventbus.prototype = {
 	openConn		: function (address,text){
 		if(!this.eventbus){
 			this.eventbus = new vertx.EventBus(this.prm.url)
+			this.eventbus.onopen = this.prm.onOpen;
+			this.eventbus.onclose = this.prm.onClose;
 		}
 	},
 	closeConn		: function() {
 		if (this.eventbus) {
 			this.eventbus.close();
+			delete(this.eventbus)
 		}
 	},
 	subscribe		: function (address,callback){
@@ -43,38 +44,41 @@ Eu.sm.vertx.eventbus.prototype = {
 
 Ext.onReady(function(){
 	Ext.BLANK_IMAGE_URL='http://www.sencha.com/s.gif';
-	var SipCallId = 0;
-	var log = function(msg, replyTo) {
-		console.log(msg);
-		addToList($.toJSON(msg),'received');
-		if(msg.eventName){
-			switch (msg.eventName){
-				case "setSipRequest" :
-					SipCallId = msg.SipCallId
-					Ext.getCmp('txtsipcallid').setValue(msg.SipCallId);
-				break;
-			}
-		}
-	}
-	var extEB = new Eu.sm.vertx.eventbus({
+	var that = this;
+	that.extEB = new Eu.sm.vertx.eventbus({
 		url		: "http://localhost:8080/eventbus",
 		onOpen	: function() {
 			Ext.getCmp("lblstatus").setText("Connected");
 			Ext.getCmp("btnconnect").setDisabled(true);
 			Ext.getCmp("btndisconnect").setDisabled(false);
 
-			extEB.subscribe("topic",log);
-			extEB.subscribe("guiaction.testClick",log);
+			that.extEB.subscribe("topic",log);
+			that.extEB.subscribe("guiaction.testClick",log);
 		},
 		onClose	: function() {
 			Ext.getCmp("lblstatus").setText("disConnected");
 			Ext.getCmp("btnconnect").setDisabled(false);
 			Ext.getCmp("btndisconnect").setDisabled(true);
-			extEb.eventbus = null;
+			that.extEB.closeConn();
 		}
 	});
 
-	extEB.openConn();
+	var log = function(msg, replyTo) {
+		console.log(msg);
+		addToList($.toJSON(msg),'received');
+		if(msg.eventName){
+			switch (msg.eventName){
+				case "setSipRequest" :
+					Ext.getCmp('txtsipcallid').setValue(msg.callId);
+				break;
+				case "incomingCall" :
+					Ext.getCmp('txtsipcallid').setValue(msg.callId);
+					Ext.getCmp('txtsipcallidanswer').setValue(msg.callId)
+					Ext.getCmp('txtsipcallidbusy').setValue(msg.callId)
+					break;
+			}
+		}
+	}
 
 	var eventsStore = new Ext.data.Store({
 		reader: new Ext.data.JsonReader({}, [
@@ -111,13 +115,17 @@ Ext.onReady(function(){
 				text		: 'connect',
 				id			: 'btnconnect',
 				disabled	: false,
-				handler		: extEB.openConn
+				handler		: function(){
+					that.extEB.openConn.call(that.extEB);
+				}
 			},{
 				xtype		: 'button',
 				text		: 'disconnect',
 				id			: 'btndisconnect',
 				disabled	: true,
-				handler		: extEB.closeConn
+				handler		: function(){
+					that.extEB.closeConn.call(that.extEB);
+				}
 			},{
 				xtype		: 'label',
 				id			: 'lblstatus',
@@ -135,7 +143,7 @@ Ext.onReady(function(){
 				text		: 'subscribe',
 				handler		: function(){
 					var address = Ext.getCmp('textsubscribe').getValue();
-					extEB.subscribe(address);
+					that.extEB.subscribe(address);
 				}
 			},'-',{
 				xtype		: 'label',
@@ -153,11 +161,11 @@ Ext.onReady(function(){
 				handler		: function(){
 					var address = Ext.getCmp('topictosend').getValue();
 					var message = Ext.getCmp('messagetosend').getValue();
-					if (extEB) {
+					if (that.extEB) {
 						var json = {
 							text : message
 						};
-						extEB.publish(address, json);
+						that.extEB.publish(address, json);
 						addToList($.toJSON(json),'sent');
 					}
 				}
@@ -199,7 +207,7 @@ Ext.onReady(function(){
 					'<tpl for=".">',
 					'<div class="search-item">',
 						'<h3><span>{title}</span></h3>',
-						'<code>{text}</code>',
+						'<div>{text}</div>',
 					'</div></tpl>'
 				)
 			}]
@@ -208,7 +216,7 @@ Ext.onReady(function(){
 			region		: 'center',
 			layout		:'table',
 			layoutConfig: {
-				columns		: 3
+				columns		: 2
 			},
 			items		: [{
 				width		: 200,
@@ -218,15 +226,24 @@ Ext.onReady(function(){
 					xtype		: 'label',
 					text		: 'call'
 				},{
-					xtype		: 'textfield',
-					value		: '310',
-					id			: 'txtcalluri'
+					xtype			: 'textfield',
+					value			: '310',
+					id				: 'txtcalluri',
+					enableKeyEvents	: true,
+					listeners		: {
+						keyup			 : function(field,e){
+							if(e.getCharCode()==13){
+								Ext.getCmp('btncall').handler();
+							}
+						}
+					}
 				},{
 					xtype		: 'button',
 					text		: 'call',
+					id			: 'btncall',
 					handler		: function(){
-						extEB.publish('guiaction.callClicked', {
-							uri	:'sip:'+Ext.getCmp('txtcalluri').getValue()+'@10.33.100.221'
+						that.extEB.publish('guiaction.callClicked', {
+							uri	: Ext.getCmp('txtcalluri').getValue()
 						});
 					}
 				}]
@@ -235,18 +252,85 @@ Ext.onReady(function(){
 				xtype		: 'panel',
 				frame		: true,
 				items		: [{
-					xtype		: 'label',
-					text		: 'hangup'
+					xtype			: 'label',
+					text			: 'hangup'
 				},{
-					xtype		: 'textfield',
-					value		: '',
-					id			: 'txtsipcallid'
+					xtype			: 'textfield',
+					value			: '',
+					id				: 'txtsipcallid',
+					enableKeyEvents	: true,
+					listeners		: {
+						keyup			 : function(field,e){
+							if(e.getCharCode()==13){
+								Ext.getCmp('btnhangup').handler();
+							}
+						}
+					}
 				},{
 					xtype		: 'button',
 					text		: 'hangup',
+					id			: 'btnhangup',
 					handler		: function(){
-						extEB.publish('guiaction.hangupClicked', {
+						that.extEB.publish('guiaction.hangupClicked', {
 							sipcallid	: Ext.getCmp('txtsipcallid').getValue()
+						});
+					}
+				}]
+			},{
+				width		: 200,
+				xtype		: 'panel',
+				frame		: true,
+				items		: [{
+					xtype			: 'label',
+					text			: 'answer'
+				},{
+					xtype			: 'textfield',
+					value			: '',
+					id				: 'txtsipcallidanswer',
+					enableKeyEvents	: true,
+					listeners		: {
+						keyup			 : function(field,e){
+							if(e.getCharCode()==13){
+								Ext.getCmp('btnanswer').handler();
+							}
+						}
+					}
+				},{
+					xtype		: 'button',
+					text		: 'answer',
+					id			: 'btnanswer',
+					handler		: function(){
+						that.extEB.publish('guiaction.pickupClicked', {
+							sipcallid	: Ext.getCmp('txtsipcallidanswer').getValue()
+						});
+					}
+				}]
+			},{
+				width		: 200,
+				xtype		: 'panel',
+				frame		: true,
+				items		: [{
+					xtype			: 'label',
+					text			: 'busy'
+				},{
+					xtype			: 'textfield',
+					value			: '',
+					id				: 'txtsipcallidbusy',
+					enableKeyEvents	: true,
+					listeners		: {
+						keyup			 : function(field,e){
+							if(e.getCharCode()==13){
+								Ext.getCmp('btnbusy').handler();
+							}
+						}
+					}
+				},{
+					xtype		: 'button',
+					text		: 'busy',
+					id			: 'btnanswer',
+					handler		: function(){
+						that.extEB.publish('guiaction.busyHereClicked', {
+							sipcallid	: Ext.getCmp('txtsipcallidbusy').getValue()
 						});
 					}
 				}]
@@ -270,4 +354,6 @@ Ext.onReady(function(){
 		}
 		return extenStore.getAt(idx);
 	}
+
+	that.extEB.openConn();
 });

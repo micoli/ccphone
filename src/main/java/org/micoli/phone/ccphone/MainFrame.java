@@ -32,6 +32,7 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.net.URL;
 
 import javax.swing.JFrame;
@@ -40,7 +41,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -56,7 +59,9 @@ public class MainFrame {
 	private Logger logger;
 	private SystemTray tray = null;
 	private TrayIcon trayIcon;
+	private String peersHome;
 	Server server;
+	public XmlConfig config;
 
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -68,11 +73,12 @@ public class MainFrame {
 	}
 
 	public MainFrame(final String[] args) {
-		String peersHome = Utils.DEFAULT_PEERS_HOME;
+		peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
 			peersHome = args[0];
 		}
 		logger = new Logger(peersHome);
+		config = new XmlConfig(peersHome + File.separator+ UserAgent.CONFIG_FILE, this.logger);
 
 		String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
 
@@ -88,6 +94,7 @@ public class MainFrame {
 	}
 
 	private void launchThreads(final String[] args) {
+
 		Server.run();
 
 		Thread thread = new Thread(new Runnable() {

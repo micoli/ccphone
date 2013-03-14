@@ -19,39 +19,31 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import org.micoli.phone.ccphone.call.CallFrame;
+import org.micoli.phone.ccphone.call.Call;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class CallFrameStateUac extends CallFrameState {
+public class CallStateUas extends CallState {
 
-	public CallFrameStateUac(String id, CallFrame callFrame, Logger logger) {
-		super(id, callFrame, logger);
+	public CallStateUas(String id, Call call, Logger logger) {
+		super(id, call, logger);
 	}
 
 	@Override
-	public void hangupClicked() {
-		callFrame.setState(callFrame.TERMINATED);
-		callFrame.hangup();
+	public void pickupClicked() {
+		call.setState(call.SUCCESS);
+		call.pickup();
 	}
 
 	@Override
-	public void calleePickup() {
-		callFrame.setState(callFrame.SUCCESS);
-		//callFrame.setCallPanel(callFrame.SUCCESS.callPanel);
+	public void busyHereClicked() {
+		call.setState(call.TERMINATED);
+		call.busyHere();
 	}
 
 	@Override
-	public void error(SipResponse sipResponse) {
-		callFrame.setState(callFrame.FAILED);
-		//callFrame.setCallPanel(callFrame.FAILED.callPanel);
-	}
-
-	@Override
-	public void ringing() {
-		callFrame.setState(callFrame.RINGING);
-		//callFrame.setCallPanel(callFrame.RINGING.callPanel);
+	public void remoteHangup() {
+		call.setState(call.REMOTE_HANGUP);
 	}
 
 }

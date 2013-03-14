@@ -17,24 +17,15 @@
 	Copyright 2010 Yohann Martineau
 */
 
-package org.micoli.phone.ccphone.call.state;
+package org.micoli.phone.ccphone.call;
 
-import org.micoli.phone.ccphone.call.CallFrame;
+import net.sourceforge.peers.sip.transport.SipRequest;
 
-import net.sourceforge.peers.Logger;
+public interface CallListener {
 
-public class CallFrameStateRemoteHangup extends CallFrameState {
-
-	public CallFrameStateRemoteHangup(String id, CallFrame callFrame, Logger logger) {
-		super(id, callFrame, logger);
-		//callPanel = new JPanel();
-		//callPanel.add(new JLabel("Remote hangup"));
-	}
-
-	@Override
-	public void closeClicked() {
-		//callFrame.setState(callFrame.TERMINATED);
-		//callFrame.close();
-	}
+	public void hangupClicked(SipRequest sipRequest);
+	public void pickupClicked(SipRequest sipRequest);
+	public void busyHereClicked(SipRequest sipRequest);
+	public void dtmf(char digit);
 
 }
