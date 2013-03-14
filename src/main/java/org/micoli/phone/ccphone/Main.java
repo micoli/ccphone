@@ -51,8 +51,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.Server;
 
-
-public class MainFrame {
+public class Main {
 
 	private AsyncEventManager eventManager ;
 	private Registration registration;
@@ -66,13 +65,12 @@ public class MainFrame {
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				JFrame.setDefaultLookAndFeelDecorated(false);
-				new MainFrame(args);
+				new Main(args);
 			}
 		});
 	}
 
-	public MainFrame(final String[] args) {
+	public Main(final String[] args) {
 		peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
 			peersHome = args[0];
@@ -94,7 +92,7 @@ public class MainFrame {
 	}
 
 	private void launchThreads(final String[] args) {
-
+		Server.init(logger);
 		Server.run();
 
 		Thread thread = new Thread(new Runnable() {
@@ -103,7 +101,7 @@ public class MainFrame {
 				if (args.length > 0) {
 					peersHome = args[0];
 				}
-				eventManager = new AsyncEventManager(MainFrame.this, peersHome, logger);
+				eventManager = new AsyncEventManager(Main.this, peersHome, logger);
 
 				try {
 					eventManager.register();

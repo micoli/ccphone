@@ -27,14 +27,11 @@ public class CallStateRemoteHangup extends CallState {
 
 	public CallStateRemoteHangup(String id, Call callFrame, Logger logger) {
 		super(id, callFrame, logger);
-		//callPanel = new JPanel();
-		//callPanel.add(new JLabel("Remote hangup"));
 	}
 
 	@Override
 	public void closeClicked() {
-		//callFrame.setState(callFrame.TERMINATED);
-		//callFrame.close();
+		call.setState(call.TERMINATED);
 	}
 
 }

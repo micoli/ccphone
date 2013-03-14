@@ -3,8 +3,6 @@ package org.micoli.phone.ccphone.remote;
 import java.io.File;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
@@ -18,19 +16,21 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.sockjs.SockJSServer;
 
 public class Server {
-	private static Logger log = LoggerFactory.getLogger("server");
+	private static net.sourceforge.peers.Logger logger;
 	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
 	static EventBus eb;
 	static String guiEventAddress = "topic";
 	static String actionAddress = "action";
+	private static HttpServer server;
+
 
 	public static void publishGui(JsonObject jsonObject){
 		eb.publish(guiEventAddress, jsonObject);
 	}
 
-	public static void run() {
-		log.info("start");
+	public static void init(net.sourceforge.peers.Logger logger2) {
+		logger = logger2;
 		vertx = Vertx.newVertx("localhost");
 		eb = vertx.eventBus();
 
@@ -44,7 +44,7 @@ public class Server {
 
 		eb.registerHandler(guiEventAddress, myHandler);
 
-		HttpServer server = vertx.createHttpServer();
+		server = vertx.createHttpServer();
 
 		server.requestHandler(new Handler<HttpServerRequest>() {
 			public void handle(HttpServerRequest req) {
@@ -91,9 +91,11 @@ public class Server {
 		JsonArray permitted = new JsonArray();
 		permitted.add(new JsonObject());
 		SockJSServer sockJSServer = vertx.createSockJSServer(server);
-		sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"),
-				permitted, permitted);
+		sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"),permitted, permitted);
+	}
 
+	public static void run(){
+		logger.info("start");
 		server.listen(8080);
 	}
 }

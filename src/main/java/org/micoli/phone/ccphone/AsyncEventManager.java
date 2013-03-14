@@ -19,17 +19,10 @@
 
 package org.micoli.phone.ccphone;
 
-import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -37,9 +30,9 @@ import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -57,49 +50,44 @@ import org.vertx.java.core.json.JsonObject;
 
 public class AsyncEventManager implements SipListener {
 
-	public static final String PEERS_URL = "http://peers.sourceforge.net/";
-	public static final String PEERS_USER_MANUAL = PEERS_URL + "user_manual";
-
-	public static final String ACTION_EXIT = "Exit";
-	public static final String ACTION_ACCOUNT = "Account";
-	public static final String ACTION_PREFERENCES = "Preferences";
-	public static final String ACTION_ABOUT = "About";
-	public static final String ACTION_DOCUMENTATION = "Documentation";
-
-	private ServerUserAgent userAgent;
-	private Map<String, Call> callFrames;
+	private UserAgent userAgent;
+	private Map<String, Call> calls;
 	private boolean closed;
 	private Logger logger;
-	MainFrame mainFrame;
+	Main main;
 
-	public AsyncEventManager(MainFrame mainFrame, String peersHome, Logger logger) {
-		this.mainFrame = mainFrame;
+	public AsyncEventManager(Main main, String peersHome, Logger logger) {
+		this.main = main;
 		this.logger = logger;
-		callFrames = Collections.synchronizedMap(new HashMap<String,Call>());
+		calls = Collections.synchronizedMap(new HashMap<String,Call>());
 		closed = false;
 		// create sip stack
 		GUIActionManager.scan(this);
 		try {
-			userAgent = new ServerUserAgent(this, peersHome, logger);
+			userAgent = new UserAgent(this, peersHome, logger);
 		} catch (SocketException e) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					JOptionPane.showMessageDialog(null, "Peers sip port " + "unavailable, about to leave", "Error", JOptionPane.ERROR_MESSAGE);
-					System.exit(1);
-				}
-			});
+			logger.error("Peers sip port " + "unavailable, about to leave");
+			System.exit(1);
 		}
 	}
 
-	// sip events
+	/**
+	 * sip registration vent
+	 */
 	public void registering(SipRequest sipRequest) {
 		Server.publishGui(JsonMapper.sipRequest("registering",sipRequest));
 	}
 
+	/**
+	 * sip registration vent
+	 */
 	public synchronized void registerFailed(SipResponse sipResponse) {
 		Server.publishGui(JsonMapper.sipResponse("registerFailed",sipResponse));
 	}
 
+	/**
+	 * sip registration vent
+	 */
 	public synchronized void registerSuccessful(SipResponse sipResponse) {
 		Server.publishGui(JsonMapper.sipResponse("registerSuccessful",sipResponse));
 		if (closed) {
@@ -109,57 +97,60 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	/**
+	 * sip event
+	 */
 	public synchronized void calleePickup(SipResponse sipResponse) {
-		Server.publishGui(JsonMapper.sipResponse("calleePickup",sipResponse));
-		Call callFrame = getCallFrame(sipResponse);
+		Call callFrame = getCall(sipResponse);
 		if (callFrame != null) {
-			callFrame.calleePickup();
+			callFrame.calleePickup(sipResponse);
 		}
 	}
 
+	/**
+	 * sip event
+	 */
 	public synchronized void error(SipResponse sipResponse) {
-		Call callFrame = getCallFrame(sipResponse);
+		Call callFrame = getCall(sipResponse);
 		if (callFrame != null) {
 			callFrame.error(sipResponse);
 		}
-		Server.publishGui(JsonMapper.sipResponse("error",sipResponse));
 	}
 
+	/**
+	 * sip event
+	 */
 	public synchronized void incomingCall(final SipRequest sipRequest, SipResponse provResponse) {
-		SipHeaders sipHeaders = sipRequest.getSipHeaders();
-		SipHeaderFieldName sipHeaderFieldName = new SipHeaderFieldName(RFC3261.HDR_FROM);
-		SipHeaderFieldValue from = sipHeaders.get(sipHeaderFieldName);
+		SipHeaderFieldValue from = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
 		String callId = Utils.getMessageCallId(sipRequest);
 
-		JsonObject jsonObject = JsonMapper.sipRequest("incomingCall",sipRequest);
-		jsonObject.putString("fromValue",from.getValue());
-		jsonObject.putString("callId",Utils.getMessageCallId(sipRequest));
-
 		Call callFrame = new Call(from.getValue(), callId, logger);
-		callFrames.put(callId, callFrame);
+		calls.put(callId, callFrame);
 		callFrame.setSipRequest(sipRequest);
 		callFrame.incomingCall();
-		Server.publishGui(jsonObject);
 	}
 
+	/**
+	 * sip event
+	 */
 	public synchronized void remoteHangup(SipRequest sipRequest) {
-		Call callFrame = getCallFrame(sipRequest);
+		Call callFrame = getCall(sipRequest);
 		if (callFrame != null) {
 			callFrame.remoteHangup();
 		}
-		Server.publishGui(JsonMapper.sipRequest("remoteHangup",sipRequest));
 	}
 
+	/**
+	 * sip event
+	 */
 	public synchronized void ringing(SipResponse sipResponse) {
-		Call callFrame = getCallFrame(sipResponse);
+		Call callFrame = getCall(sipResponse);
 		if (callFrame != null) {
-			callFrame.ringing();
+			callFrame.ringing(sipResponse);
 		}
-		Server.publishGui(JsonMapper.sipResponse("ringing",sipResponse));
 	}
 
 	// main frame events
-
 	public void register() throws SipUriSyntaxException {
 		if (userAgent == null) {
 			// if several peers instances are launched concurrently,
@@ -172,28 +163,6 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
-	@GUIAction
-	public synchronized void callClicked(Message<JsonObject> message) {
-		String uri = message.body.getString("uri");
-		uri = "sip:"+uri+ "@"+mainFrame.config.getDomain();
-		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
-		Call callFrame = new Call(uri, callId, logger);
-		SipRequest sipRequest;
-		try {
-			sipRequest = userAgent.getUac().invite(uri, callId);
-		} catch (SipUriSyntaxException e) {
-			logger.error(e.getMessage(), e);
-			return;
-		}
-		callFrames.put(callId, callFrame);
-		HashMap<String,String> additional = new HashMap<String,String>();
-		additional.put("callId",callId );
-		callFrame.setSipRequest(sipRequest);
-		callFrame.callClicked();
-
-		Server.publishGui(JsonMapper.sipRequest("setSipRequest",sipRequest,additional));
-	}
-
 	public synchronized void windowClosed() {
 		try {
 			userAgent.getUac().unregister();
@@ -201,8 +170,8 @@ public class AsyncEventManager implements SipListener {
 			logger.error("error while unregistering", e);
 		}
 		closed = true;
-		Thread thread = new Thread(new Runnable() {
 
+		Thread thread = new Thread(new Runnable() {
 			public void run() {
 				try {
 					Thread.sleep(3 * RFC3261.TIMER_T1);
@@ -214,10 +183,29 @@ public class AsyncEventManager implements SipListener {
 		thread.start();
 	}
 
+	@GUIAction
+	public synchronized void callClicked(Message<JsonObject> message) {
+		String uri = message.body.getString("uri");
+		uri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR + uri + RFC3261.AT + main.config.getDomain();
+		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
+		Call callFrame = new Call(uri, callId, logger);
+		SipRequest sipRequest;
+		try {
+			sipRequest = userAgent.getUac().invite(uri, callId);
+			calls.put(callId, callFrame);
+			callFrame.setSipRequest(sipRequest);
+			callFrame.callClicked();
+		} catch (SipUriSyntaxException e) {
+			logger.error(e.getMessage(), e);
+			Server.publishGui(new JsonObject().putString("setSipRequestError", e.getMessage()));
+			return;
+		}
+	}
+
 	SipRequest getSipRequestFromCallId(String callId){
 		SipRequest sipRequest = null;
-		if(callFrames.containsKey(callId)){
-			sipRequest = callFrames.get(callId).getSipRequest();
+		if(calls.containsKey(callId)){
+			sipRequest = calls.get(callId).getSipRequest();
 		}
 		return sipRequest;
 	}
@@ -253,63 +241,12 @@ public class AsyncEventManager implements SipListener {
 
 	@GUIAction
 	public void dtmf(Message<JsonObject> message) {
-		//TODO DECODE JsonObject to CHAR
-		char digit='*';
 		MediaManager mediaManager = userAgent.getMediaManager();
-		mediaManager.sendDtmf(digit);
+		mediaManager.sendDtmf(message.body.getString("dmtfDigit").charAt(0));
 	}
 
-	private Call getCallFrame(SipMessage sipMessage) {
-		//String callId = message.body.getString("callid");
-		//SipRequest sipRequest = new SipRequest(null, null);
-		//sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(CallId));
+	private Call getCall(SipMessage sipMessage) {
 		String callId = Utils.getMessageCallId(sipMessage);
-		return callFrames.get(callId);
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		String action = e.getActionCommand();
-		logger.debug("gui actionPerformed() " + action);
-		Runnable runnable = null;
-		if (ACTION_EXIT.equals(action)) {
-			runnable = new Runnable() {
-
-				public void run() {
-					windowClosed();
-				}
-			};
-		} else if (ACTION_PREFERENCES.equals(action)) {
-			runnable = new Runnable() {
-
-				public void run() {
-					JOptionPane.showMessageDialog(null, "Not implemented yet");
-				}
-			};
-		} else if (ACTION_ABOUT.equals(action)) {
-			runnable = new Runnable() {
-
-				public void run() {
-					AboutFrame aboutFrame = new AboutFrame(userAgent.getPeersHome(), logger);
-					aboutFrame.setVisible(true);
-				}
-			};
-		} else if (ACTION_DOCUMENTATION.equals(action)) {
-			runnable = new Runnable() {
-
-				public void run() {
-					try {
-						URI uri = new URI(PEERS_USER_MANUAL);
-						java.awt.Desktop.getDesktop().browse(uri);
-					} catch (URISyntaxException e) {
-						logger.error(e.getMessage(), e);
-					} catch (IOException e) {
-						logger.error(e.getMessage(), e);
-					}
-				}
-			};
-		}
-		if (runnable != null) {
-			SwingUtilities.invokeLater(runnable);
-		}
+		return calls.get(callId);
 	}
 }

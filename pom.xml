@@ -135,7 +135,7 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>org.micoli.phone.ccphone.MainFrame</mainClass>
+									<mainClass>org.micoli.phone.ccphone.Main</mainClass>
 								</manifest>
 							</archive>
 							<descriptorRefs>
