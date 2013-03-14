@@ -15,7 +15,7 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.sockjs.SockJSServer;
 
-public class Server {
+public class VertX {
 	private static net.sourceforge.peers.Logger logger;
 	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +36,7 @@ public class Server {
 
 		Handler<Message<JsonObject>> myHandler = new Handler<Message<JsonObject>>() {
 			public void handle(Message<JsonObject> message) {
-				logger.info("Server event due to registration : ["
+				logger.info("VertX event due to registration : ["
 						+ message.body.getString("text") + "]\n"
 						+ message.body.toString());
 			}

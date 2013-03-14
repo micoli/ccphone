@@ -20,7 +20,7 @@
 package org.micoli.phone.ccphone.registrations;
 
 import net.sourceforge.peers.Logger;
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 import org.vertx.java.core.json.JsonObject;
 
 public class Registration {
@@ -66,6 +66,6 @@ public class Registration {
 		jsonObject.putString("eventName", "displayRegistering");
 		jsonObject.putString("icon", "working.gif");
 		jsonObject.putString("text", "Registering");
-		Server.publishGui(jsonObject);
+		VertX.publishGui(jsonObject);
 	}
 }

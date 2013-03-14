@@ -41,7 +41,7 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.call.Call;
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.GUIAction;
 import org.micoli.phone.tools.GUIActionManager;
 import org.micoli.phone.tools.JsonMapper;
@@ -75,21 +75,21 @@ public class AsyncEventManager implements SipListener {
 	 * sip registration vent
 	 */
 	public void registering(SipRequest sipRequest) {
-		Server.publishGui(JsonMapper.sipRequest("registering",sipRequest));
+		VertX.publishGui(JsonMapper.sipRequest("registering",sipRequest));
 	}
 
 	/**
 	 * sip registration vent
 	 */
 	public synchronized void registerFailed(SipResponse sipResponse) {
-		Server.publishGui(JsonMapper.sipResponse("registerFailed",sipResponse));
+		VertX.publishGui(JsonMapper.sipResponse("registerFailed",sipResponse));
 	}
 
 	/**
 	 * sip registration vent
 	 */
 	public synchronized void registerSuccessful(SipResponse sipResponse) {
-		Server.publishGui(JsonMapper.sipResponse("registerSuccessful",sipResponse));
+		VertX.publishGui(JsonMapper.sipResponse("registerSuccessful",sipResponse));
 		if (closed) {
 			userAgent.close();
 			System.exit(0);
@@ -197,7 +197,7 @@ public class AsyncEventManager implements SipListener {
 			callFrame.callClicked();
 		} catch (SipUriSyntaxException e) {
 			logger.error(e.getMessage(), e);
-			Server.publishGui(new JsonObject().putString("setSipRequestError", e.getMessage()));
+			VertX.publishGui(new JsonObject().putString("setSipRequestError", e.getMessage()));
 			return;
 		}
 	}
@@ -212,7 +212,7 @@ public class AsyncEventManager implements SipListener {
 
 	@GUIAction
 	public synchronized void testClick(Message<JsonObject> message) {
-		Server.publishGui(new JsonObject().putString("text", "test"));
+		VertX.publishGui(new JsonObject().putString("text", "test"));
 	}
 
 	@GUIAction

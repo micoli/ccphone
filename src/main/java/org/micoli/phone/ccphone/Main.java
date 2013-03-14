@@ -47,7 +47,7 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.registrations.Registration;
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 
 public class Main {
 
@@ -57,7 +57,7 @@ public class Main {
 	private SystemTray tray = null;
 	private TrayIcon trayIcon;
 	private String peersHome;
-	Server server;
+	VertX vertX;
 	public XmlConfig config;
 
 	public static void main(final String[] args) {
@@ -82,8 +82,8 @@ public class Main {
 	}
 
 	private void launchThreads(final String[] args) {
-		Server.init(logger);
-		Server.run();
+		VertX.init(logger);
+		VertX.run();
 
 		Thread thread = new Thread(new Runnable() {
 			public void run() {

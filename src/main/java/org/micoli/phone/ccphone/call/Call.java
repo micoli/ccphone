@@ -41,7 +41,7 @@ import org.micoli.phone.ccphone.call.state.CallStateSuccess;
 import org.micoli.phone.ccphone.call.state.CallStateTerminated;
 import org.micoli.phone.ccphone.call.state.CallStateUac;
 import org.micoli.phone.ccphone.call.state.CallStateUas;
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 import org.vertx.java.core.json.JsonObject;
 
@@ -85,7 +85,7 @@ public class Call {
 
 		HashMap<String,String> additional = new HashMap<String,String>();
 		additional.put("callId",callid );
-		Server.publishGui(JsonMapper.sipRequest("setSipRequest",getSipRequest(),additional));
+		VertX.publishGui(JsonMapper.sipRequest("setSipRequest",getSipRequest(),additional));
 	}
 
 	public void incomingCall() {
@@ -95,31 +95,31 @@ public class Call {
 		JsonObject jsonObject = JsonMapper.sipRequest("incomingCall",getSipRequest());
 		jsonObject.putString("fromValue",from.getValue());
 		jsonObject.putString("callId",Utils.getMessageCallId(getSipRequest()));
-		Server.publishGui(jsonObject);
+		VertX.publishGui(jsonObject);
 	}
 
 	public void remoteHangup() {
 		state.remoteHangup();
 
-		Server.publishGui(JsonMapper.sipRequest("remoteHangup",sipRequest));
+		VertX.publishGui(JsonMapper.sipRequest("remoteHangup",sipRequest));
 	}
 
 	public void error(SipResponse sipResponse) {
 		state.error(sipResponse);
 
-		Server.publishGui(JsonMapper.sipResponse("error",sipResponse));
+		VertX.publishGui(JsonMapper.sipResponse("error",sipResponse));
 	}
 
 	public void calleePickup(SipResponse sipResponse) {
 		state.calleePickup();
 
-		Server.publishGui(JsonMapper.sipResponse("calleePickup",sipResponse));
+		VertX.publishGui(JsonMapper.sipResponse("calleePickup",sipResponse));
 	}
 
 	public void ringing(SipResponse sipResponse) {
 		state.ringing();
 
-		Server.publishGui(JsonMapper.sipResponse("ringing",sipResponse));
+		VertX.publishGui(JsonMapper.sipResponse("ringing",sipResponse));
 	}
 
 	public void hangup() {

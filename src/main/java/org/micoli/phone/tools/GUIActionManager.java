@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import net.sourceforge.peers.Logger;
 
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
@@ -23,7 +23,7 @@ public class GUIActionManager {
 				listCommand.put(method.getName(), method);
 				final String MethodName = method.getName();
 				logger.info("init GUIAction."+method.getName());
-				Server.vertx.eventBus().registerHandler("guiaction."+method.getName(), new Handler<Message<JsonObject>>() {
+				VertX.vertx.eventBus().registerHandler("guiaction."+method.getName(), new Handler<Message<JsonObject>>() {
 					@Override
 					public void handle(Message<JsonObject> event) {
 						try {

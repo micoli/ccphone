@@ -12,15 +12,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<!-- http://devzendo-org-repo.googlecode.com/svn-history/r22/trunk/releases/ch/randelshofer/quaqua/7.3.4/quaqua-7.3.4.pom -->
+	<!-- https://github.com/crashub/mod-shell.git -->
 	<repositories>
-		<!-- <repository> <id>msgpack.org</id> <name>MessagePack Repository for
-			Maven</name> <url>http://msgpack.org/maven2/</url> </repository> <repository>
-			<id>devzendo-org-repo</id> <url>http://devzendo-org-repo.googlecode.com/svn-history/r22/trunk/releases/</url>
-			</repository> <repository> <id>jsonrpc4j-webdav-maven-repo</id> <name>jsonrpc4j
-			maven repository</name> <url>http://jsonrpc4j.googlecode.com/svn/maven/repo/</url>
-			<layout>default</layout> </repository> -->
 		<repository>
 			<id>maven2</id>
 			<name>maven2</name>
@@ -29,8 +22,6 @@
 		</repository>
 	</repositories>
 	<dependencies>
-		<!-- <dependency> <groupId>org.msgpack</groupId> <artifactId>msgpack-rpc</artifactId>
-			<version>0.6.1-devel</version> </dependency> -->
 		<dependency>
 			<groupId>org.vert-x</groupId>
 			<artifactId>vertx-core</artifactId>
@@ -52,8 +43,6 @@
 			<version>0.5-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- <dependency> <groupId>ch.randelshofer</groupId> <artifactId>quaqua</artifactId>
-			<version>7.3.4</version> <scope>release</scope> </dependency> -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
