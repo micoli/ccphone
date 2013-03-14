@@ -22,7 +22,6 @@ public class JsonMapper {
 		while (it.hasNext()) {
 			@SuppressWarnings("unchecked")
 			Map.Entry<String,String> pairs = (Map.Entry<String,String>)it.next();
-			System.out.println(pairs.getKey() + " = " + pairs.getValue());
 			jsonObject.putString(pairs.getKey(),pairs.getValue());
 		}
 		return jsonObject;

@@ -62,7 +62,7 @@ public class AsyncEventManager implements SipListener {
 		calls = Collections.synchronizedMap(new HashMap<String,Call>());
 		closed = false;
 		// create sip stack
-		GUIActionManager.scan(this);
+		GUIActionManager.scan(this,logger);
 		try {
 			userAgent = new UserAgent(this, peersHome, logger);
 		} catch (SocketException e) {
@@ -213,7 +213,6 @@ public class AsyncEventManager implements SipListener {
 	@GUIAction
 	public synchronized void testClick(Message<JsonObject> message) {
 		Server.publishGui(new JsonObject().putString("text", "test"));
-		System.out.println("testClick : ["+ message.body.getString("text") + "]"+ message.replyAddress +"\n");
 	}
 
 	@GUIAction

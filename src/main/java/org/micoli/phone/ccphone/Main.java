@@ -35,10 +35,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
@@ -77,14 +75,6 @@ public class Main {
 		}
 		logger = new Logger(peersHome);
 		config = new XmlConfig(peersHome + File.separator+ UserAgent.CONFIG_FILE, this.logger);
-
-		String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
-
-		try {
-			UIManager.setLookAndFeel(lookAndFeelClassName);
-		} catch (Exception e) {
-			logger.error("cannot change look and feel", e);
-		}
 
 		launchThreads(args);
 
@@ -126,7 +116,7 @@ public class Main {
 			return;
 		}
 		if (!SystemTray.isSupported()) {
-			System.out.println("SystemTray is not supported");
+			logger.error("SystemTray is not supported");
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();
@@ -159,7 +149,7 @@ public class Main {
 		try {
 			tray.add(trayIcon);
 		} catch (AWTException e) {
-			System.out.println("TrayIcon could not be added.");
+			logger.error("TrayIcon could not be added.");
 			return;
 		}
 
@@ -178,20 +168,16 @@ public class Main {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MenuItem item = (MenuItem) e.getSource();
-				System.out.println(item.getLabel());
 				if ("Error".equals(item.getLabel())) {
 					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an error message", TrayIcon.MessageType.ERROR);
 
 				} else if ("Warning".equals(item.getLabel())) {
-					// type = TrayIcon.MessageType.WARNING;
 					trayIcon.displayMessage("Sun TrayIcon Demo", "This is a warning message", TrayIcon.MessageType.WARNING);
 
 				} else if ("Info".equals(item.getLabel())) {
-					// type = TrayIcon.MessageType.INFO;
 					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an info message", TrayIcon.MessageType.INFO);
 
 				} else if ("None".equals(item.getLabel())) {
-					// type = TrayIcon.MessageType.NONE;
 					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an ordinary message", TrayIcon.MessageType.NONE);
 				}
 			}
@@ -227,7 +213,7 @@ public class Main {
 	}
 
 	public void socketExceptionOnStartup() {
-		System.out.println("peers SIP port " + "unavailable, exiting");
+		logger.error("peers SIP port " + "unavailable, exiting");
 		System.exit(1);
 	}
 
