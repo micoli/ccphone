@@ -21,7 +21,7 @@ package org.micoli.phone.ccphone.registrations;
 
 import net.sourceforge.peers.Logger;
 
-import org.micoli.phone.ccphone.remote.Server;
+import org.micoli.phone.ccphone.remote.VertX;
 import org.vertx.java.core.json.JsonObject;
 
 public class RegistrationStateRegistering extends RegistrationState {
@@ -37,7 +37,7 @@ public class RegistrationStateRegistering extends RegistrationState {
 		jsonObject.putString("eventName", "registerSuccessful");
 		jsonObject.putString("icon", "green.png");
 		jsonObject.putString("text", "Registered");
-		Server.publishGui(jsonObject);
+		VertX.publishGui(jsonObject);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class RegistrationStateRegistering extends RegistrationState {
 		jsonObject.putString("eventName", "registerFailed");
 		jsonObject.putString("icon", "red.png");
 		jsonObject.putString("text", "Registration failed");
-		Server.publishGui(jsonObject);
+		VertX.publishGui(jsonObject);
 	}
 
 }

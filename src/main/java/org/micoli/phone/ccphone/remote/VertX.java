@@ -15,7 +15,7 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.sockjs.SockJSServer;
 
-public class Server {
+public class VertX {
 	private static net.sourceforge.peers.Logger logger;
 	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +36,7 @@ public class Server {
 
 		Handler<Message<JsonObject>> myHandler = new Handler<Message<JsonObject>>() {
 			public void handle(Message<JsonObject> message) {
-				System.out.println("Server event due to registration : ["
+				logger.info("VertX event due to registration : ["
 						+ message.body.getString("text") + "]\n"
 						+ message.body.toString());
 			}
@@ -48,7 +48,7 @@ public class Server {
 
 		server.requestHandler(new Handler<HttpServerRequest>() {
 			public void handle(HttpServerRequest req) {
-				System.out.println("path " + req.path);
+				logger.debug("HttpServerRequest path " + req.path);
 				String internalPath = req.path;
 				String documentRoot = "src/main/resources/eventbus";
 
@@ -59,7 +59,6 @@ public class Server {
 				if (internalPath.equals("/")){
 					internalPath = "/index.html";
 				}
-				System.out.println(documentRoot+internalPath);
 
 				File file = new File(documentRoot+internalPath);
 				if (!file.exists()){
@@ -77,7 +76,6 @@ public class Server {
 					});
 					ws.dataHandler(new Handler<Buffer>() {
 						public void handle(Buffer data) {
-							System.out.println("websocket " + data.toString());
 							eb.publish(guiEventAddress, data);
 							// ws.writeTextFrame(data.toString());
 						}
