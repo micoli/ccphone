@@ -19,62 +19,54 @@
 
 package org.micoli.phone.ccphone.call;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-
-import org.micoli.phone.ccphone.call.state.CallFrameState;
-import org.micoli.phone.ccphone.call.state.CallFrameStateFailed;
-import org.micoli.phone.ccphone.call.state.CallFrameStateInit;
-import org.micoli.phone.ccphone.call.state.CallFrameStateRemoteHangup;
-import org.micoli.phone.ccphone.call.state.CallFrameStateRinging;
-import org.micoli.phone.ccphone.call.state.CallFrameStateSuccess;
-import org.micoli.phone.ccphone.call.state.CallFrameStateTerminated;
-import org.micoli.phone.ccphone.call.state.CallFrameStateUac;
-import org.micoli.phone.ccphone.call.state.CallFrameStateUas;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class CallFrame {
+import org.micoli.phone.ccphone.call.state.CallState;
+import org.micoli.phone.ccphone.call.state.CallStateFailed;
+import org.micoli.phone.ccphone.call.state.CallStateInit;
+import org.micoli.phone.ccphone.call.state.CallStateRemoteHangup;
+import org.micoli.phone.ccphone.call.state.CallStateRinging;
+import org.micoli.phone.ccphone.call.state.CallStateSuccess;
+import org.micoli.phone.ccphone.call.state.CallStateTerminated;
+import org.micoli.phone.ccphone.call.state.CallStateUac;
+import org.micoli.phone.ccphone.call.state.CallStateUas;
+
+public class Call {
 
 	public static final String HANGUP_ACTION_COMMAND    = "hangup";
 	public static final String PICKUP_ACTION_COMMAND    = "pickup";
 	public static final String BUSY_HERE_ACTION_COMMAND = "busyhere";
 	public static final String CLOSE_ACTION_COMMAND     = "close";
 
-	private CallFrameState state;
+	private CallState state;
 
-	public final CallFrameState INIT;
-	public final CallFrameState UAC;
-	public final CallFrameState UAS;
-	public final CallFrameState RINGING;
-	public final CallFrameState SUCCESS;
-	public final CallFrameState FAILED;
-	public final CallFrameState REMOTE_HANGUP;
-	public final CallFrameState TERMINATED;
+	public final CallState INIT;
+	public final CallState UAC;
+	public final CallState UAS;
+	public final CallState RINGING;
+	public final CallState SUCCESS;
+	public final CallState FAILED;
+	public final CallState REMOTE_HANGUP;
+	public final CallState TERMINATED;
 
 	private SipRequest sipRequest;
-	private CallFrameListener callFrameListener;
+	private CallListener callFrameListener;
 
-	CallFrame(String remoteParty, String id, Logger logger) {
-		INIT = new CallFrameStateInit(id, this, logger);
-		UAC = new CallFrameStateUac(id, this, logger);
-		UAS = new CallFrameStateUas(id, this, logger);
-		RINGING = new CallFrameStateRinging(id, this, logger);
-		SUCCESS = new CallFrameStateSuccess(id, this, logger);
-		FAILED = new CallFrameStateFailed(id, this, logger);
-		REMOTE_HANGUP = new CallFrameStateRemoteHangup(id, this, logger);
-		TERMINATED = new CallFrameStateTerminated(id, this, logger);
+	public Call(String remoteParty, String id, Logger logger) {
+		INIT = new CallStateInit(id, this, logger);
+		UAC = new CallStateUac(id, this, logger);
+		UAS = new CallStateUas(id, this, logger);
+		RINGING = new CallStateRinging(id, this, logger);
+		SUCCESS = new CallStateSuccess(id, this, logger);
+		FAILED = new CallStateFailed(id, this, logger);
+		REMOTE_HANGUP = new CallStateRemoteHangup(id, this, logger);
+		TERMINATED = new CallStateTerminated(id, this, logger);
 		state = INIT;
 	}
 
@@ -121,7 +113,7 @@ public class CallFrame {
 		}
 	}
 
-	public void setState(CallFrameState state) {
+	public void setState(CallState state) {
 		this.state.log(state);
 		this.state = state;
 	}
@@ -130,6 +122,10 @@ public class CallFrame {
 		this.sipRequest = sipRequest;
 	}
 
+
+	public SipRequest getSipRequest() {
+		return sipRequest;
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
