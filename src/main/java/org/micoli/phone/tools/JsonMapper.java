@@ -3,6 +3,7 @@ package org.micoli.phone.tools;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -18,9 +19,8 @@ public class JsonMapper {
 		jsonObject.putString("requestUriHost", sipRequest.getRequestUri().getHost());
 		jsonObject.putString("requestUriUserInfo", sipRequest.getRequestUri().getUserinfo());
 		jsonObject.putNumber("requestUriport", sipRequest.getRequestUri().getPort());
-		Iterator it = additional.entrySet().iterator();
+		Iterator<Entry<String, String>> it = additional.entrySet().iterator();
 		while (it.hasNext()) {
-			@SuppressWarnings("unchecked")
 			Map.Entry<String,String> pairs = (Map.Entry<String,String>)it.next();
 			jsonObject.putString(pairs.getKey(),pairs.getValue());
 		}

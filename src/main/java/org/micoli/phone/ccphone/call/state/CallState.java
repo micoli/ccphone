@@ -19,17 +19,17 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.AbstractState;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.call.Call;
+import org.micoli.phone.tools.ProxyLogger;
 
 public abstract class CallState extends AbstractState {
 
 	protected Call call;
 
-	public CallState(String id, Call call, Logger logger) {
+	public CallState(String id, Call call, ProxyLogger logger) {
 		super(id, logger);
 		this.call = call;
 	}

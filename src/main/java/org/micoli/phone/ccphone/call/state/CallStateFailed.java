@@ -20,12 +20,11 @@
 package org.micoli.phone.ccphone.call.state;
 
 import org.micoli.phone.ccphone.call.Call;
-
-import net.sourceforge.peers.Logger;
+import org.micoli.phone.tools.ProxyLogger;
 
 public class CallStateFailed extends CallState {
 
-	public CallStateFailed(String id, Call call, Logger logger) {
+	public CallStateFailed(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 

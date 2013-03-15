@@ -24,16 +24,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.micoli.phone.ccphone.registrations.Registration;
-
 import net.sourceforge.peers.Config;
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+
+import org.micoli.phone.ccphone.registrations.Registration;
+import org.micoli.phone.tools.ProxyLogger;
 
 /**
  * AccountFrame, edited with NetBeans IDE.
@@ -43,11 +43,11 @@ public class AccountFrame extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private Logger logger;
+	private ProxyLogger logger;
 	private String registrationLabel = "";
 
 	/** Creates new form AccountFrame */
-	public AccountFrame(ActionListener actionListener, UserAgent userAgent, Logger logger) {
+	public AccountFrame(ActionListener actionListener, UserAgent userAgent, ProxyLogger logger) {
 		this.userAgent = userAgent;
 		this.logger = logger;
 		unregistering = false;

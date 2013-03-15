@@ -3,6 +3,7 @@ package org.micoli.phone.ccphone.remote;
 import java.io.File;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
@@ -16,7 +17,7 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.sockjs.SockJSServer;
 
 public class VertX {
-	private static net.sourceforge.peers.Logger logger;
+	private static ProxyLogger logger;
 	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
 	static EventBus eb;
@@ -28,7 +29,7 @@ public class VertX {
 		eb.publish(guiEventAddress, jsonObject);
 	}
 
-	public static void init(net.sourceforge.peers.Logger logger2) {
+	public static void init(ProxyLogger logger2) {
 		logger = logger2;
 		vertx = Vertx.newVertx("localhost");
 		eb = vertx.eventBus();

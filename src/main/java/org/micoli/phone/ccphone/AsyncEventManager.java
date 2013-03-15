@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sourceforge.peers.Config;
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -47,6 +46,7 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.GUIAction;
 import org.micoli.phone.tools.GUIActionManager;
 import org.micoli.phone.tools.JsonMapper;
+import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
@@ -55,10 +55,10 @@ public class AsyncEventManager implements SipListener {
 	private UserAgent userAgent;
 	private Map<String, Call> calls;
 	private boolean closed;
-	private Logger logger;
+	private ProxyLogger logger;
 	Main main;
 
-	public AsyncEventManager(Main main, String peersHome, Logger logger) {
+	public AsyncEventManager(Main main, String peersHome, ProxyLogger logger) {
 		this.main = main;
 		this.logger = logger;
 		calls = Collections.synchronizedMap(new HashMap<String,Call>());

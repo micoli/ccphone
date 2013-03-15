@@ -24,7 +24,6 @@ import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -43,6 +42,7 @@ import org.micoli.phone.ccphone.call.state.CallStateUac;
 import org.micoli.phone.ccphone.call.state.CallStateUas;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
+import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.json.JsonObject;
 
 public class Call {
@@ -67,7 +67,7 @@ public class Call {
 	private CallListener callFrameListener;
 	private String callId;
 
-	public Call(String remoteParty, String id, Logger logger) {
+	public Call(String remoteParty, String id, ProxyLogger logger) {
 		this.callId = id;
 		INIT = new CallStateInit(id, this, logger);
 		UAC = new CallStateUac(id, this, logger);

@@ -19,14 +19,14 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import org.micoli.phone.ccphone.call.Call;
-
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipResponse;
+
+import org.micoli.phone.ccphone.call.Call;
+import org.micoli.phone.tools.ProxyLogger;
 
 public class CallStateUac extends CallState {
 
-	public CallStateUac(String id, Call call, Logger logger) {
+	public CallStateUac(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 

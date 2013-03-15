@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import net.sourceforge.peers.Logger;
-
 import org.micoli.phone.ccphone.remote.VertX;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
@@ -15,7 +13,7 @@ import org.vertx.java.core.json.JsonObject;
 public class GUIActionManager {
 	public static HashMap<String, Method> listCommand = new HashMap<String, Method>();
 
-	public static void scan(final Object container,Logger logger) {
+	public static void scan(final Object container, ProxyLogger logger) {
 		for (Method method : container.getClass().getMethods()) {
 			if (method.isAnnotationPresent(GUIAction.class)) {
 				GUIAction annotation = method.getAnnotation(GUIAction.class);

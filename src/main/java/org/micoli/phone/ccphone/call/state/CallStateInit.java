@@ -19,13 +19,12 @@
 
 package org.micoli.phone.ccphone.call.state;
 
-import net.sourceforge.peers.Logger;
-
 import org.micoli.phone.ccphone.call.Call;
+import org.micoli.phone.tools.ProxyLogger;
 
 public class CallStateInit extends CallState {
 
-	public CallStateInit(String id, Call call, Logger logger) {
+	public CallStateInit(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 

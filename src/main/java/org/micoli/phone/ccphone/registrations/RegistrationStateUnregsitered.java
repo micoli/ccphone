@@ -19,11 +19,11 @@
 
 package org.micoli.phone.ccphone.registrations;
 
-import net.sourceforge.peers.Logger;
+import org.micoli.phone.tools.ProxyLogger;
 
 public class RegistrationStateUnregsitered extends RegistrationState {
 
-	public RegistrationStateUnregsitered(String id, Registration registration, Logger logger) {
+	public RegistrationStateUnregsitered(String id, Registration registration, ProxyLogger logger) {
 		super(id, registration, logger);
 	}
 

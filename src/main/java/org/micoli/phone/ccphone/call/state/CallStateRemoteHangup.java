@@ -20,12 +20,11 @@
 package org.micoli.phone.ccphone.call.state;
 
 import org.micoli.phone.ccphone.call.Call;
-
-import net.sourceforge.peers.Logger;
+import org.micoli.phone.tools.ProxyLogger;
 
 public class CallStateRemoteHangup extends CallState {
 
-	public CallStateRemoteHangup(String id, Call callFrame, Logger logger) {
+	public CallStateRemoteHangup(String id, Call callFrame, ProxyLogger logger) {
 		super(id, callFrame, logger);
 	}
 

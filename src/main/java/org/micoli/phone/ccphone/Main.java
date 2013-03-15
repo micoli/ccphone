@@ -38,7 +38,6 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -48,13 +47,14 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.VertX;
+import org.micoli.phone.tools.ProxyLogger;
 
 
 public class Main {
 
 	private AsyncEventManager eventManager ;
 	private Registration registration;
-	private Logger logger;
+	private ProxyLogger logger;
 	private SystemTray tray = null;
 	private TrayIcon trayIcon;
 	private String peersHome;
@@ -74,7 +74,7 @@ public class Main {
 		if (args.length > 0) {
 			peersHome = args[0];
 		}
-		logger = new Logger(peersHome);
+		logger = new ProxyLogger(peersHome);
 		config = new XmlConfig(peersHome + File.separator+ UserAgent.CONFIG_FILE, this.logger);
 
 		launchThreads(args);

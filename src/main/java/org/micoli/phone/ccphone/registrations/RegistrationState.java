@@ -19,14 +19,15 @@
 
 package org.micoli.phone.ccphone.registrations;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.AbstractState;
+
+import org.micoli.phone.tools.ProxyLogger;
 
 public abstract class RegistrationState extends AbstractState {
 
 	protected Registration registration;
 
-	public RegistrationState(String id, Registration registration, Logger logger) {
+	public RegistrationState(String id, Registration registration, ProxyLogger logger) {
 		super(id, logger);
 		this.registration = registration;
 	}

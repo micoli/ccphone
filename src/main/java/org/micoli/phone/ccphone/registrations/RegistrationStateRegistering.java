@@ -19,14 +19,13 @@
 
 package org.micoli.phone.ccphone.registrations;
 
-import net.sourceforge.peers.Logger;
-
 import org.micoli.phone.ccphone.remote.VertX;
+import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.json.JsonObject;
 
 public class RegistrationStateRegistering extends RegistrationState {
 
-	public RegistrationStateRegistering(String id, Registration registration, Logger logger) {
+	public RegistrationStateRegistering(String id, Registration registration, ProxyLogger logger) {
 		super(id, registration, logger);
 	}
 
