@@ -49,6 +49,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.VertX;
 
+
 public class Main {
 
 	private AsyncEventManager eventManager ;

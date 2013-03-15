@@ -24,7 +24,6 @@ public class VertX {
 	static String actionAddress = "action";
 	private static HttpServer server;
 
-
 	public static void publishGui(JsonObject jsonObject){
 		eb.publish(guiEventAddress, jsonObject);
 	}

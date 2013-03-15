@@ -24,7 +24,6 @@ public class GUIActionManager {
 				final String MethodName = method.getName();
 				logger.info("init GUIAction."+method.getName());
 				VertX.vertx.eventBus().registerHandler("guiaction."+method.getName(), new Handler<Message<JsonObject>>() {
-					@Override
 					public void handle(Message<JsonObject> event) {
 						try {
 							GUIActionManager.listCommand.get(MethodName).invoke(container, event);
