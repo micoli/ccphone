@@ -34,15 +34,15 @@ public abstract class CallState extends AbstractState {
 		this.call = call;
 	}
 
-	public void callClicked() {}
+	public void callAction() {}
 	public void incomingCall() {}
 	public void calleePickup() {}
 	public void error(SipResponse sipResponse) {}
-	public void pickupClicked() {}
-	public void busyHereClicked() {}
-	public void hangupClicked() {}
+	public void pickupAction() {}
+	public void busyHereAction() {}
+	public void hangupAction() {}
 	public void remoteHangup() {}
-	public void closeClicked() {}
+	public void closeAction() {}
 	public void ringing() {}
 
 }

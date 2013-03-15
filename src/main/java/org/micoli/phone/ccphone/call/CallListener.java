@@ -23,9 +23,9 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 
 public interface CallListener {
 
-	public void hangupClicked(SipRequest sipRequest);
-	public void pickupClicked(SipRequest sipRequest);
-	public void busyHereClicked(SipRequest sipRequest);
+	public void hangupAction(SipRequest sipRequest);
+	public void pickupAction(SipRequest sipRequest);
+	public void busyHereAction(SipRequest sipRequest);
 	public void dtmf(char digit);
 
 }

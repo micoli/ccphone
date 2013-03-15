@@ -65,10 +65,10 @@ public class Call {
 
 	private SipRequest sipRequest;
 	private CallListener callFrameListener;
-	private String callid;
+	private String callId;
 
 	public Call(String remoteParty, String id, Logger logger) {
-		this.callid = id;
+		this.callId = id;
 		INIT = new CallStateInit(id, this, logger);
 		UAC = new CallStateUac(id, this, logger);
 		UAS = new CallStateUas(id, this, logger);
@@ -80,12 +80,20 @@ public class Call {
 		state = INIT;
 	}
 
-	public void callClicked() {
-		state.callClicked();
+	public void callAction() {
+		state.callAction();
 
 		HashMap<String,String> additional = new HashMap<String,String>();
-		additional.put("callId",callid );
+		additional.put("callId",callId );
 		VertX.publishGui(JsonMapper.sipRequest("setSipRequest",getSipRequest(),additional));
+	}
+
+	public String getCallid() {
+		return callId;
+	}
+
+	public String getCallState() {
+		return state.getClass().getSimpleName();
 	}
 
 	public void incomingCall() {
@@ -124,19 +132,19 @@ public class Call {
 
 	public void hangup() {
 		if (callFrameListener != null) {
-			callFrameListener.hangupClicked(sipRequest);
+			callFrameListener.hangupAction(sipRequest);
 		}
 	}
 
 	public void pickup() {
 		if (callFrameListener != null && sipRequest != null) {
-			callFrameListener.pickupClicked(sipRequest);
+			callFrameListener.pickupAction(sipRequest);
 		}
 	}
 
 	public void busyHere(){
 		if (callFrameListener != null && sipRequest != null) {
-			callFrameListener.busyHereClicked(sipRequest);
+			callFrameListener.busyHereAction(sipRequest);
 			sipRequest = null;
 		}
 	}
@@ -162,27 +170,27 @@ public class Call {
 			runnable = new Runnable() {
 				@Override
 				public void run() {
-					state.hangupClicked();
+					state.hangupAction();
 				}
 			};
 		} else if (CLOSE_ACTION_COMMAND.equals(actionCommand)) {
 			runnable = new Runnable() {
 				@Override
 				public void run() {
-					state.closeClicked();
+					state.closeAction();
 				}
 			};
 		} else if (PICKUP_ACTION_COMMAND.equals(actionCommand)) {
 			runnable = new Runnable() {
 				public void run() {
-					state.pickupClicked();
+					state.pickupAction();
 				}
 			};
 		} else if (BUSY_HERE_ACTION_COMMAND.equals(actionCommand)) {
 			runnable = new Runnable() {
 				@Override
 				public void run() {
-					state.busyHereClicked();
+					state.busyHereAction();
 				}
 			};
 		}

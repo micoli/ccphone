@@ -30,7 +30,7 @@ public class CallStateRemoteHangup extends CallState {
 	}
 
 	@Override
-	public void closeClicked() {
+	public void closeAction() {
 		call.setState(call.TERMINATED);
 	}
 

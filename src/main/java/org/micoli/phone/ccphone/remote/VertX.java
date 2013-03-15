@@ -20,7 +20,7 @@ public class VertX {
 	static public Vertx vertx;
 	static ObjectMapper mapper = new ObjectMapper();
 	static EventBus eb;
-	static String guiEventAddress = "topic";
+	static String guiEventAddress = "calls";
 	static String actionAddress = "action";
 	private static HttpServer server;
 

@@ -30,13 +30,13 @@ public class CallStateUas extends CallState {
 	}
 
 	@Override
-	public void pickupClicked() {
+	public void pickupAction() {
 		call.setState(call.SUCCESS);
 		call.pickup();
 	}
 
 	@Override
-	public void busyHereClicked() {
+	public void busyHereAction() {
 		call.setState(call.TERMINATED);
 		call.busyHere();
 	}

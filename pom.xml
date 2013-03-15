@@ -93,6 +93,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<jvm>/Library/Java/JavaVirtualMachines/jdk1.7.0_17.jdk/Contents/Home/bin/java</jvm>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.3</version>

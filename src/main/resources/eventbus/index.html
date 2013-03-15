@@ -13,7 +13,6 @@
 		<script src="http://cdn.sockjs.org/sockjs-0.3.4.min.js"></script>
 		<script src="http://jquery-json.googlecode.com/svn/trunk/build/jquery.json.min.js"></script>
 		<script src="vertxbus.js"></script>
-		<script src="prettyprint.js"></script>
 
 
 		<style>
@@ -29,6 +28,15 @@
 			border: 1px solid gray;
 			border-left: 0px;
 			border-right: 0px;
+		}
+		pre.json > .key{
+			font-weight:bold;
+		}
+		pre.json > .string{
+			color:blue;
+		}
+		pre.json > .number{
+			color:red;
 		}
 
 		body {

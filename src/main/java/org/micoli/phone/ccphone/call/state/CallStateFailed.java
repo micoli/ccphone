@@ -29,6 +29,6 @@ public class CallStateFailed extends CallState {
 		super(id, call, logger);
 	}
 
-	public void closeClicked() {
+	public void closeAction() {
 	}
 }

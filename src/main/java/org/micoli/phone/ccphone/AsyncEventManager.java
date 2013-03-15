@@ -22,7 +22,9 @@ package org.micoli.phone.ccphone;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -71,6 +73,19 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	SipRequest getSipRequestFromCallId(String callId){
+		SipRequest sipRequest = null;
+		if(calls.containsKey(callId)){
+			sipRequest = calls.get(callId).getSipRequest();
+		}
+		return sipRequest;
+	}
+
+	private Call getCall(SipMessage sipMessage) {
+		String callId = Utils.getMessageCallId(sipMessage);
+		return calls.get(callId);
+	}
+
 	/**
 	 * sip registration vent
 	 */
@@ -101,9 +116,9 @@ public class AsyncEventManager implements SipListener {
 	 * sip event
 	 */
 	public synchronized void calleePickup(SipResponse sipResponse) {
-		Call callFrame = getCall(sipResponse);
-		if (callFrame != null) {
-			callFrame.calleePickup(sipResponse);
+		Call call = getCall(sipResponse);
+		if (call != null) {
+			call.calleePickup(sipResponse);
 		}
 	}
 
@@ -111,9 +126,9 @@ public class AsyncEventManager implements SipListener {
 	 * sip event
 	 */
 	public synchronized void error(SipResponse sipResponse) {
-		Call callFrame = getCall(sipResponse);
-		if (callFrame != null) {
-			callFrame.error(sipResponse);
+		Call call = getCall(sipResponse);
+		if (call != null) {
+			call.error(sipResponse);
 		}
 	}
 
@@ -124,19 +139,20 @@ public class AsyncEventManager implements SipListener {
 		SipHeaderFieldValue from = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
 		String callId = Utils.getMessageCallId(sipRequest);
 
-		Call callFrame = new Call(from.getValue(), callId, logger);
-		calls.put(callId, callFrame);
-		callFrame.setSipRequest(sipRequest);
-		callFrame.incomingCall();
+		Call call = new Call(from.getValue(), callId, logger);
+		calls.put(callId, call);
+		call.setSipRequest(sipRequest);
+		call.incomingCall();
 	}
 
 	/**
 	 * sip event
 	 */
 	public synchronized void remoteHangup(SipRequest sipRequest) {
-		Call callFrame = getCall(sipRequest);
-		if (callFrame != null) {
-			callFrame.remoteHangup();
+		Call call = getCall(sipRequest);
+		if (call != null) {
+			call.remoteHangup();
+			calls.remove(call.getCallid());
 		}
 	}
 
@@ -144,9 +160,9 @@ public class AsyncEventManager implements SipListener {
 	 * sip event
 	 */
 	public synchronized void ringing(SipResponse sipResponse) {
-		Call callFrame = getCall(sipResponse);
-		if (callFrame != null) {
-			callFrame.ringing(sipResponse);
+		Call call = getCall(sipResponse);
+		if (call != null) {
+			call.ringing(sipResponse);
 		}
 	}
 
@@ -184,17 +200,17 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	@GUIAction
-	public synchronized void callClicked(Message<JsonObject> message) {
+	public synchronized void callAction(Message<JsonObject> message) {
 		String uri = message.body.getString("uri");
 		uri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR + uri + RFC3261.AT + main.config.getDomain();
 		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
-		Call callFrame = new Call(uri, callId, logger);
+		Call call = new Call(uri, callId, logger);
 		SipRequest sipRequest;
 		try {
 			sipRequest = userAgent.getUac().invite(uri, callId);
-			calls.put(callId, callFrame);
-			callFrame.setSipRequest(sipRequest);
-			callFrame.callClicked();
+			calls.put(callId, call);
+			call.setSipRequest(sipRequest);
+			call.callAction();
 		} catch (SipUriSyntaxException e) {
 			logger.error(e.getMessage(), e);
 			VertX.publishGui(new JsonObject().putString("setSipRequestError", e.getMessage()));
@@ -202,27 +218,29 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
-	SipRequest getSipRequestFromCallId(String callId){
-		SipRequest sipRequest = null;
-		if(calls.containsKey(callId)){
-			sipRequest = calls.get(callId).getSipRequest();
+	@GUIAction
+	public synchronized void listCallsAction(Message<JsonObject> message) {
+		JsonObject jsonList = new JsonObject();
+		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String,Call> pair = (Map.Entry<String,Call>)it.next();
+			Call call = pair.getValue();
+			jsonList.putObject(pair.getKey(),new JsonObject()
+				.putString("callid",call.getCallid())
+				.putString("state",call.getCallState())
+				);
 		}
-		return sipRequest;
+		VertX.publishGui(new JsonObject().putObject("list", jsonList));
 	}
 
 	@GUIAction
-	public synchronized void testClick(Message<JsonObject> message) {
-		VertX.publishGui(new JsonObject().putString("text", "test"));
-	}
-
-	@GUIAction
-	public synchronized void hangupClicked(Message<JsonObject> message) {
+	public synchronized void hangupAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUac().terminate(sipRequest);
 	}
 
 	@GUIAction
-	public synchronized void pickupClicked(Message<JsonObject> message) {
+	public synchronized void pickupAction(Message<JsonObject> message) {
 		//SipRequest sipRequest = new SipRequest(null, null);
 		//sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(msgCallId));
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
@@ -233,7 +251,7 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	@GUIAction
-	public synchronized void busyHereClicked(Message<JsonObject> message) {
+	public synchronized void busyHereAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUas().rejectCall(sipRequest);
 	}
@@ -244,8 +262,4 @@ public class AsyncEventManager implements SipListener {
 		mediaManager.sendDtmf(message.body.getString("dmtfDigit").charAt(0));
 	}
 
-	private Call getCall(SipMessage sipMessage) {
-		String callId = Utils.getMessageCallId(sipMessage);
-		return calls.get(callId);
-	}
 }

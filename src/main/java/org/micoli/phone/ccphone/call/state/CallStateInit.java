@@ -30,7 +30,7 @@ public class CallStateInit extends CallState {
 	}
 
 	@Override
-	public void callClicked() {
+	public void callAction() {
 		call.setState(call.UAC);
 		//JFrame frame = call.getFrame();
 		//call.setCallPanel(call.UAC.callPanel);

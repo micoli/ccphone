@@ -36,7 +36,7 @@ public class CallStateSuccess extends CallState {
 	}
 
 	@Override
-	public void hangupClicked() {
+	public void hangupAction() {
 		call.setState(call.TERMINATED);
 		call.hangup();
 	}
