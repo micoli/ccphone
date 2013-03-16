@@ -43,8 +43,8 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.GUIAction;
-import org.micoli.phone.tools.GUIActionManager;
+import org.micoli.phone.tools.Action;
+import org.micoli.phone.tools.ActionManager;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.eventbus.Message;
@@ -64,7 +64,7 @@ public class AsyncEventManager implements SipListener {
 		calls = Collections.synchronizedMap(new HashMap<String,Call>());
 		closed = false;
 		// create sip stack
-		GUIActionManager.scan(this,logger);
+		ActionManager.scan(this,logger);
 		try {
 			userAgent = new UserAgent(this, peersHome, logger);
 		} catch (SocketException e) {
@@ -199,7 +199,7 @@ public class AsyncEventManager implements SipListener {
 		thread.start();
 	}
 
-	@GUIAction
+	@Action
 	public synchronized void callAction(Message<JsonObject> message) {
 		String uri = message.body.getString("uri");
 		uri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR + uri + RFC3261.AT + main.config.getDomain();
@@ -218,7 +218,7 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
-	@GUIAction
+	@Action
 	public synchronized void listCallsAction(Message<JsonObject> message) {
 		JsonObject jsonList = new JsonObject();
 		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
@@ -233,13 +233,13 @@ public class AsyncEventManager implements SipListener {
 		VertX.publishGui(new JsonObject().putObject("list", jsonList));
 	}
 
-	@GUIAction
+	@Action
 	public synchronized void hangupAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUac().terminate(sipRequest);
 	}
 
-	@GUIAction
+	@Action
 	public synchronized void pickupAction(Message<JsonObject> message) {
 		//SipRequest sipRequest = new SipRequest(null, null);
 		//sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(msgCallId));
@@ -250,13 +250,13 @@ public class AsyncEventManager implements SipListener {
 		userAgent.getUas().acceptCall(sipRequest, dialog);
 	}
 
-	@GUIAction
+	@Action
 	public synchronized void busyHereAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUas().rejectCall(sipRequest);
 	}
 
-	@GUIAction
+	@Action
 	public void dtmf(Message<JsonObject> message) {
 		MediaManager mediaManager = userAgent.getMediaManager();
 		mediaManager.sendDtmf(message.body.getString("dmtfDigit").charAt(0));

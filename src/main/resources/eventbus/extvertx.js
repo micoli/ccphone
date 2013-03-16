@@ -8,6 +8,7 @@ Eu.sm.vertx.eventbus = function(prm){
 
 	return this;
 }
+
 function syntaxHighlight(json) {
 	if (typeof json != 'string') {
 			json = JSON.stringify(json, undefined, 2);
@@ -29,6 +30,7 @@ function syntaxHighlight(json) {
 			return '<span class="' + cls + '">' + match + '</span>';
 	});
 }
+
 Eu.sm.vertx.eventbus.prototype = {
 	onOpen			: Ext.emptyFn,
 	onClose			: Ext.emptyFn,
@@ -62,6 +64,39 @@ Eu.sm.vertx.eventbus.prototype = {
 }
 
 
+Eu.sm.ccphone = Ext.extend(Ext.Panel,{
+	initComponent	: function (){
+		var that = this;
+		that.lblId =  Ext.id();
+
+		Ext.apply(this,{
+			layout		: 'border',
+			items		: [{
+				xtype		: 'panel',
+				region		: 'center',
+				items		: [{
+					xtype		: 'label',
+					id			: that.lblId,
+					text		: 'test'
+				}]
+			},{
+				region		: 'south',
+				title		: 'eee',
+				collapsible	: true,
+				height		: 100,
+				items		: [{
+					xtype	: 'label',
+					text	: 'test2'
+				}]
+			}]
+		})
+		Eu.sm.ccphone.superclass.initComponent.apply(this,arguments);
+	}
+});
+Ext.reg('ccphone', Eu.sm.ccphone);
+
+
+
 Ext.onReady(function(){
 	Ext.BLANK_IMAGE_URL='http://www.sencha.com/s.gif';
 	var that = this;
@@ -81,6 +116,24 @@ Ext.onReady(function(){
 			that.extEB.closeConn();
 		}
 	});
+
+	var win = new Ext.Window({
+		layout		: 'fit',
+		width		: 500,
+		height		: 300,
+		closeAction	:'hide',
+		plain		: true,
+		items		: [{
+			xtype		: 'ccphone'
+		}],
+		buttons		: [{
+			text		: 'Close',
+			handler		: function(){
+				win.hide();
+			}
+		}]
+	});
+	win.show();
 
 	var log = function(msg, replyTo) {
 		console.log(msg);

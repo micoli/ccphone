@@ -14,23 +14,27 @@ import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.ServerWebSocket;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
+import org.vertx.java.core.net.NetServer;
+import org.vertx.java.core.net.NetSocket;
 import org.vertx.java.core.sockjs.SockJSServer;
 
 public class VertX {
-	private static ProxyLogger logger;
+	static private ProxyLogger logger;
 	static public Vertx vertx;
-	static ObjectMapper mapper = new ObjectMapper();
-	static EventBus eb;
-	static String guiEventAddress = "calls";
-	static String actionAddress = "action";
-	private static HttpServer server;
+	static private EventBus eb;
+	static private ObjectMapper mapper = new ObjectMapper();
+	static private String guiEventAddress = "calls";
+	static private String actionAddress = "action";
+	static private HttpServer httpServer;
+	static private NetServer netServer;
 
 	public static void publishGui(JsonObject jsonObject){
 		eb.publish(guiEventAddress, jsonObject);
 	}
 
-	public static void init(ProxyLogger logger2) {
-		logger = logger2;
+	public static void init(ProxyLogger prmLogger) {
+		logger = prmLogger;
+
 		vertx = Vertx.newVertx("localhost");
 		eb = vertx.eventBus();
 
@@ -44,9 +48,9 @@ public class VertX {
 
 		eb.registerHandler(guiEventAddress, myHandler);
 
-		server = vertx.createHttpServer();
+		httpServer = vertx.createHttpServer();
 
-		server.requestHandler(new Handler<HttpServerRequest>() {
+		httpServer.requestHandler(new Handler<HttpServerRequest>() {
 			public void handle(HttpServerRequest req) {
 				logger.debug("HttpServerRequest path " + req.path);
 				String internalPath = req.path;
@@ -66,7 +70,9 @@ public class VertX {
 				}
 				req.response.sendFile(documentRoot+internalPath);
 			}
-		}).websocketHandler(new Handler<ServerWebSocket>() {
+		});
+
+		httpServer.websocketHandler(new Handler<ServerWebSocket>() {
 			public void handle(final ServerWebSocket ws) {
 				if (ws.path.equals("/eventbus")) {
 					ws.closedHandler(new Handler<Void>() {
@@ -86,14 +92,30 @@ public class VertX {
 			}
 		});
 
+		netServer = vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
+			public void handle(final NetSocket socket) {
+				socket.dataHandler(new Handler<Buffer>() {
+					public void handle(Buffer buffer) {
+						String command = buffer.toString().replace("\n", "").replace("\r", "");
+						socket.write(command);
+						if (command.equalsIgnoreCase("exit")) {
+							socket.close();
+						}
+					}
+				});
+			}
+		});
+		// .setSSL(true).setKeyStorePath("httpServer.jks").setKeyStorePassword("ccphone")
+
 		JsonArray permitted = new JsonArray();
 		permitted.add(new JsonObject());
-		SockJSServer sockJSServer = vertx.createSockJSServer(server);
+		SockJSServer sockJSServer = vertx.createSockJSServer(httpServer);
 		sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"),permitted, permitted);
 	}
 
 	public static void run(){
 		logger.info("start");
-		server.listen(8080);
+		httpServer.listen(8080);
+		netServer.listen(1234);
 	}
 }
