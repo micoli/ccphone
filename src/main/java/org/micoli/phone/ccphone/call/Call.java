@@ -120,14 +120,18 @@ public class Call {
 
 	public void calleePickup(SipResponse sipResponse) {
 		state.calleePickup();
+		JsonObject jsonObject = JsonMapper.sipResponse("calleePickup",sipResponse);
+		jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
 
-		VertX.publishGui(JsonMapper.sipResponse("calleePickup",sipResponse));
+		VertX.publishGui(jsonObject);
 	}
 
 	public void ringing(SipResponse sipResponse) {
 		state.ringing();
+		JsonObject jsonObject = JsonMapper.sipResponse("ringing",sipResponse);
+		jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
 
-		VertX.publishGui(JsonMapper.sipResponse("ringing",sipResponse));
+		VertX.publishGui(jsonObject);
 	}
 
 	public void hangup() {
