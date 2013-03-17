@@ -9,19 +9,20 @@ public class ProxyLogger extends Logger {
 	}
 
 	public void debug(String message) {
+		System.out.println("DEBUG " + message);
 	}
 
 	public void info(String message) {
+		System.out.println("INFO " + message);
 	}
 
 	public void error(String message) {
+		System.out.println("ERROR " + message);
 	}
 
 	public void error(String message, Exception exception) {
-	}
-
-	private String genericLog(String message, String level) {
-		return "";
+		System.out.println("ERROR " + message);
+		exception.printStackTrace();
 	}
 
 	public void traceNetwork(String message, String direction) {
