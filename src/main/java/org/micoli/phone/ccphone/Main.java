@@ -121,7 +121,7 @@ public class Main {
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();
-		URL url = getClass().getResource("Settings-Phone-icon.png");
+		URL url = getClass().getResource("/org/micoli/phone/phone-icon-gray.png");
 		Image imageIcon = Toolkit.getDefaultToolkit().getImage(url);
 		trayIcon = new TrayIcon(imageIcon, "test");
 		tray = SystemTray.getSystemTray();
