@@ -5,6 +5,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -25,6 +29,7 @@ public class JsonMapper {
 	}
 
 	public static JsonObject sipRequest(String eventName,SipRequest sipRequest,HashMap<String,String> additional){
+		SipHeaderFieldValue from = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.putString("eventName", eventName);
 		jsonObject.putString("method", sipRequest.getMethod());
@@ -32,6 +37,11 @@ public class JsonMapper {
 		jsonObject.putString("requestUriHost", sipRequest.getRequestUri().getHost());
 		jsonObject.putString("requestUriUserInfo", sipRequest.getRequestUri().getUserinfo());
 		jsonObject.putNumber("requestUriport", sipRequest.getRequestUri().getPort());
+		jsonObject.putString("callId",Utils.getMessageCallId(sipRequest));
+		if(from!=null){
+			jsonObject.putString("fromValue",from.getValue());
+		}
+
 		JsonMapper.addAdditionnal(jsonObject, additional);
 		return jsonObject;
 	}
@@ -47,6 +57,7 @@ public class JsonMapper {
 		jsonObject.putString("sipVersion", sipResponse.getSipVersion());
 		jsonObject.putString("sipHeaders", sipResponse.getSipHeaders().toString());
 		jsonObject.putNumber("statusCode", sipResponse.getStatusCode());
+		jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
 		JsonMapper.addAdditionnal(jsonObject, additional);
 		return jsonObject;
 	}

@@ -24,10 +24,6 @@ import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 
-import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -43,7 +39,6 @@ import org.micoli.phone.ccphone.call.state.CallStateUas;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
-import org.vertx.java.core.json.JsonObject;
 
 public class Call {
 
@@ -82,7 +77,6 @@ public class Call {
 
 	public void callAction() {
 		state.callAction();
-
 		HashMap<String,String> additional = new HashMap<String,String>();
 		additional.put("callId",callId );
 		VertX.publishGui(JsonMapper.sipRequest("setSipRequest",getSipRequest(),additional));
@@ -98,12 +92,12 @@ public class Call {
 
 	public void incomingCall() {
 		state.incomingCall();
-
-		SipHeaderFieldValue from = getSipRequest().getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
-		JsonObject jsonObject = JsonMapper.sipRequest("incomingCall",getSipRequest());
-		jsonObject.putString("fromValue",from.getValue());
-		jsonObject.putString("callId",Utils.getMessageCallId(getSipRequest()));
-		VertX.publishGui(jsonObject);
+		//SipHeaderFieldValue from = getSipRequest().getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
+		//JsonObject jsonObject = JsonMapper.sipRequest("incomingCall",getSipRequest());
+		//jsonObject.putString("fromValue",from.getValue());
+		//jsonObject.putString("callId",Utils.getMessageCallId(getSipRequest()));
+		//VertX.publishGui(jsonObject);
+		VertX.publishGui(JsonMapper.sipRequest("incomingCall",getSipRequest()));
 	}
 
 	public void remoteHangup() {
@@ -120,18 +114,18 @@ public class Call {
 
 	public void calleePickup(SipResponse sipResponse) {
 		state.calleePickup();
-		JsonObject jsonObject = JsonMapper.sipResponse("calleePickup",sipResponse);
-		jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
-
-		VertX.publishGui(jsonObject);
+		//JsonObject jsonObject = JsonMapper.sipResponse("calleePickup",sipResponse);
+		//jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
+		//VertX.publishGui(jsonObject);
+		VertX.publishGui(JsonMapper.sipResponse("calleePickup",sipResponse));
 	}
 
 	public void ringing(SipResponse sipResponse) {
 		state.ringing();
-		JsonObject jsonObject = JsonMapper.sipResponse("ringing",sipResponse);
-		jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
-
-		VertX.publishGui(jsonObject);
+		//JsonObject jsonObject = JsonMapper.sipResponse("ringing",sipResponse);
+		//jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
+		//VertX.publishGui(jsonObject);
+		VertX.publishGui(JsonMapper.sipResponse("ringing",sipResponse));
 	}
 
 	public void hangup() {
