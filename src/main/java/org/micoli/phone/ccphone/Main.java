@@ -14,16 +14,15 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-	Copyright 2010 Yohann Martineau
+	inspired from Yohann Martineau Copyright 2010
  */
 
-//mvn clean package;java -jar target/ccphone-0.1-SNAPSHOT-jar-with-dependencies.jar  org.micoli.phone.ccphone.MainFrame
+//mvn clean package;java -jar target/ccphone-0.1-SNAPSHOT-jar-with-dependencies.jar
 
 package org.micoli.phone.ccphone;
 
 import java.awt.AWTException;
 import java.awt.Image;
-import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -51,7 +50,9 @@ import org.micoli.phone.tools.ProxyLogger;
 
 
 public class Main {
-
+	static {
+		System.setProperty("apple.awt.UIElement", "true");
+	}
 	private AsyncEventManager eventManager ;
 	private Registration registration;
 	private ProxyLogger logger;
@@ -70,6 +71,7 @@ public class Main {
 	}
 
 	public Main(final String[] args) {
+
 		peersHome = Utils.DEFAULT_PEERS_HOME;
 		if (args.length > 0) {
 			peersHome = args[0];
@@ -117,7 +119,6 @@ public class Main {
 			return;
 		}
 		if (!SystemTray.isSupported()) {
-			logger.error("SystemTray is not supported");
 			return;
 		}
 		final PopupMenu popup = new PopupMenu();
@@ -128,21 +129,10 @@ public class Main {
 
 		// Create a popup menu components
 		MenuItem aboutItem = new MenuItem("About");
-		Menu displayMenu = new Menu("Display");
-		MenuItem errorItem = new MenuItem("Error");
-		MenuItem warningItem = new MenuItem("Warning");
-		MenuItem infoItem = new MenuItem("Info");
-		MenuItem noneItem = new MenuItem("None");
 		MenuItem exitItem = new MenuItem("Exit");
 
-		// Add components to popup menu
 		popup.add(aboutItem);
 		popup.addSeparator();
-		popup.add(displayMenu);
-		displayMenu.add(errorItem);
-		displayMenu.add(warningItem);
-		displayMenu.add(infoItem);
-		displayMenu.add(noneItem);
 		popup.add(exitItem);
 
 		trayIcon.setPopupMenu(popup);
@@ -154,40 +144,17 @@ public class Main {
 			return;
 		}
 
-		trayIcon.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "This dialog box is run from System Tray");
-			}
-		});
+		/*
+		 * trayIcon.addActionListener(new ActionListener() { public void
+		 * actionPerformed(ActionEvent e) { JOptionPane.showMessageDialog(null,
+		 * "This dialog box is run from System Tray"); } });
+		 */
 
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "This dialog box is run from the About menu item");
 			}
 		});
-
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				MenuItem item = (MenuItem) e.getSource();
-				if ("Error".equals(item.getLabel())) {
-					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an error message", TrayIcon.MessageType.ERROR);
-
-				} else if ("Warning".equals(item.getLabel())) {
-					trayIcon.displayMessage("Sun TrayIcon Demo", "This is a warning message", TrayIcon.MessageType.WARNING);
-
-				} else if ("Info".equals(item.getLabel())) {
-					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an info message", TrayIcon.MessageType.INFO);
-
-				} else if ("None".equals(item.getLabel())) {
-					trayIcon.displayMessage("Sun TrayIcon Demo", "This is an ordinary message", TrayIcon.MessageType.NONE);
-				}
-			}
-		};
-
-		errorItem.addActionListener(listener);
-		warningItem.addActionListener(listener);
-		infoItem.addActionListener(listener);
-		noneItem.addActionListener(listener);
 
 		exitItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
