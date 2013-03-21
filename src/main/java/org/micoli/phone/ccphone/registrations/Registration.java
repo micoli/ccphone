@@ -23,16 +23,36 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.json.JsonObject;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Registration.
+ */
 public class Registration {
 
+	/** The unregistered. */
 	public final RegistrationState UNREGISTERED;
+	
+	/** The registering. */
 	public final RegistrationState REGISTERING;
+	
+	/** The success. */
 	public final RegistrationState SUCCESS;
+	
+	/** The failed. */
 	public final RegistrationState FAILED;
 
+	/** The label. */
 	protected String label;
+	
+	/** The state. */
 	private RegistrationState state;
 
+	/**
+	 * Instantiates a new registration.
+	 *
+	 * @param label the label
+	 * @param logger the logger
+	 */
 	public Registration(String label, ProxyLogger logger) {
 		this.label = label;
 
@@ -45,22 +65,39 @@ public class Registration {
 
 	}
 
+	/**
+	 * Sets the state.
+	 *
+	 * @param state the new state
+	 */
 	public void setState(RegistrationState state) {
 		this.state = state;
 	}
 
+	/**
+	 * Register sent.
+	 */
 	public synchronized void registerSent() {
 		state.registerSent();
 	}
 
+	/**
+	 * Register failed.
+	 */
 	public synchronized void registerFailed() {
 		state.registerFailed();
 	}
 
+	/**
+	 * Register successful.
+	 */
 	public synchronized void registerSuccessful() {
 		state.registerSuccessful();
 	}
 
+	/**
+	 * Display registering.
+	 */
 	protected void displayRegistering() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.putString("eventName", "displayRegistering");

@@ -22,12 +22,26 @@ package org.micoli.phone.ccphone.call.state;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateFailed.
+ */
 public class CallStateFailed extends CallState {
 
+	/**
+	 * Instantiates a new call state failed.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallStateFailed(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#closeAction()
+	 */
 	public void closeAction() {
 	}
 }

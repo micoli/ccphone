@@ -23,12 +23,26 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.json.JsonObject;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class RegistrationStateRegistering.
+ */
 public class RegistrationStateRegistering extends RegistrationState {
 
+	/**
+	 * Instantiates a new registration state registering.
+	 *
+	 * @param id the id
+	 * @param registration the registration
+	 * @param logger the logger
+	 */
 	public RegistrationStateRegistering(String id, Registration registration, ProxyLogger logger) {
 		super(id, registration, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.registrations.RegistrationState#registerSuccessful()
+	 */
 	@Override
 	public void registerSuccessful() {
 		registration.setState(registration.SUCCESS);
@@ -39,6 +53,9 @@ public class RegistrationStateRegistering extends RegistrationState {
 		VertX.publishGui(jsonObject);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.registrations.RegistrationState#registerFailed()
+	 */
 	@Override
 	public void registerFailed() {
 		registration.setState(registration.FAILED);

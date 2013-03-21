@@ -49,19 +49,44 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.ProxyLogger;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class Main.
+ */
 public class Main {
 	static {
 		System.setProperty("apple.awt.UIElement", "true");
 	}
+	
+	/** The event manager. */
 	private AsyncEventManager eventManager ;
+	
+	/** The registration. */
 	private Registration registration;
+	
+	/** The logger. */
 	private ProxyLogger logger;
+	
+	/** The tray. */
 	private SystemTray tray = null;
+	
+	/** The tray icon. */
 	private TrayIcon trayIcon;
+	
+	/** The peers home. */
 	private String peersHome;
+	
+	/** The vert x. */
 	VertX vertX;
+	
+	/** The config. */
 	public XmlConfig config;
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -70,6 +95,11 @@ public class Main {
 		});
 	}
 
+	/**
+	 * Instantiates a new main.
+	 *
+	 * @param args the args
+	 */
 	public Main(final String[] args) {
 
 		peersHome = Utils.DEFAULT_PEERS_HOME;
@@ -84,6 +114,11 @@ public class Main {
 		initTray();
 	}
 
+	/**
+	 * Launch threads.
+	 *
+	 * @param args the args
+	 */
 	private void launchThreads(final String[] args) {
 		VertX.init(logger);
 		VertX.run();
@@ -114,6 +149,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Inits the tray.
+	 */
 	private void initTray() {
 		if (tray != null) {
 			return;
@@ -164,42 +202,95 @@ public class Main {
 		});
 	}
 
+	/**
+	 * Window closed.
+	 *
+	 * @param e the e
+	 */
 	public void windowClosed(WindowEvent e) {
 		eventManager.windowClosed();
 	}
 
+	/**
+	 * Register failed.
+	 *
+	 * @param sipResponse the sip response
+	 */
 	public void registerFailed(SipResponse sipResponse) {
 		registration.registerFailed();
 	}
 
+	/**
+	 * Register successful.
+	 *
+	 * @param sipResponse the sip response
+	 */
 	public void registerSuccessful(SipResponse sipResponse) {
 		registration.registerSuccessful();
 	}
 
+	/**
+	 * Registering.
+	 *
+	 * @param sipRequest the sip request
+	 */
 	public void registering(SipRequest sipRequest) {
 		registration.registerSent();
 	}
 
+	/**
+	 * Socket exception on startup.
+	 */
 	public void socketExceptionOnStartup() {
 		logger.error("peers SIP port " + "unavailable, exiting");
 		System.exit(1);
 	}
 
+	/**
+	 * Window activated.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowActivated(WindowEvent arg0) {
 	}
 
+	/**
+	 * Window closing.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowClosing(WindowEvent arg0) {
 	}
 
+	/**
+	 * Window deactivated.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowDeactivated(WindowEvent arg0) {
 	}
 
+	/**
+	 * Window deiconified.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowDeiconified(WindowEvent arg0) {
 	}
 
+	/**
+	 * Window iconified.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowIconified(WindowEvent arg0) {
 	}
 
+	/**
+	 * Window opened.
+	 *
+	 * @param arg0 the arg0
+	 */
 	public void windowOpened(WindowEvent arg0) {
 	}
 }

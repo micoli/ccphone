@@ -10,9 +10,21 @@ import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ActionManager.
+ */
 public class ActionManager {
+	
+	/** The list command. */
 	public static HashMap<String, Method> listCommand = new HashMap<String, Method>();
 
+	/**
+	 * Scan.
+	 *
+	 * @param container the container
+	 * @param logger the logger
+	 */
 	public static void scan(final Object container, final ProxyLogger logger) {
 		for (Method method : container.getClass().getMethods()) {
 			if (method.isAnnotationPresent(Action.class)) {

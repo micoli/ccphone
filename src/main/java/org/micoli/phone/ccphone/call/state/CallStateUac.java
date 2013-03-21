@@ -24,30 +24,53 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateUac.
+ */
 public class CallStateUac extends CallState {
 
+	/**
+	 * Instantiates a new call state uac.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallStateUac(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#hangupAction()
+	 */
 	@Override
 	public void hangupAction() {
 		call.setState(call.TERMINATED);
 		call.hangup();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#calleePickup()
+	 */
 	@Override
 	public void calleePickup() {
 		call.setState(call.SUCCESS);
 		//call.setCallPanel(call.SUCCESS.callPanel);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#error(net.sourceforge.peers.sip.transport.SipResponse)
+	 */
 	@Override
 	public void error(SipResponse sipResponse) {
 		call.setState(call.FAILED);
 		//call.setCallPanel(call.FAILED.callPanel);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#ringing()
+	 */
 	@Override
 	public void ringing() {
 		call.setState(call.RINGING);

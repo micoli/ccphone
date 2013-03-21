@@ -23,17 +23,40 @@ import net.sourceforge.peers.sip.AbstractState;
 
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class RegistrationState.
+ */
 public abstract class RegistrationState extends AbstractState {
 
+	/** The registration. */
 	protected Registration registration;
 
+	/**
+	 * Instantiates a new registration state.
+	 *
+	 * @param id the id
+	 * @param registration the registration
+	 * @param logger the logger
+	 */
 	public RegistrationState(String id, Registration registration, ProxyLogger logger) {
 		super(id, logger);
 		this.registration = registration;
 	}
 
+	/**
+	 * Register sent.
+	 */
 	public void registerSent() {}
+	
+	/**
+	 * Register successful.
+	 */
 	public void registerSuccessful() {}
+	
+	/**
+	 * Register failed.
+	 */
 	public void registerFailed() {}
 
 }

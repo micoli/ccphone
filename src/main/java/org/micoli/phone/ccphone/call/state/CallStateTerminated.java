@@ -22,12 +22,26 @@ package org.micoli.phone.ccphone.call.state;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateTerminated.
+ */
 public class CallStateTerminated extends CallState {
 
+	/**
+	 * Instantiates a new call state terminated.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallStateTerminated(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#calleePickup()
+	 */
 	@Override
 	public void calleePickup() {
 		call.hangup();

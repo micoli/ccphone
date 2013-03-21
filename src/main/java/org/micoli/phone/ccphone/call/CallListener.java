@@ -21,11 +21,46 @@ package org.micoli.phone.ccphone.call;
 
 import net.sourceforge.peers.sip.transport.SipRequest;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The listener interface for receiving call events.
+ * The class that is interested in processing a call
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addCallListener<code> method. When
+ * the call event occurs, that object's appropriate
+ * method is invoked.
+ *
+ * @see CallEvent
+ */
 public interface CallListener {
 
+	/**
+	 * Hangup action.
+	 *
+	 * @param sipRequest the sip request
+	 */
 	public void hangupAction(SipRequest sipRequest);
+	
+	/**
+	 * Pickup action.
+	 *
+	 * @param sipRequest the sip request
+	 */
 	public void pickupAction(SipRequest sipRequest);
+	
+	/**
+	 * Busy here action.
+	 *
+	 * @param sipRequest the sip request
+	 */
 	public void busyHereAction(SipRequest sipRequest);
+	
+	/**
+	 * Dtmf.
+	 *
+	 * @param digit the digit
+	 */
 	public void dtmf(char digit);
 
 }

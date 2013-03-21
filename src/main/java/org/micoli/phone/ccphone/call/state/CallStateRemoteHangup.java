@@ -22,12 +22,26 @@ package org.micoli.phone.ccphone.call.state;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateRemoteHangup.
+ */
 public class CallStateRemoteHangup extends CallState {
 
+	/**
+	 * Instantiates a new call state remote hangup.
+	 *
+	 * @param id the id
+	 * @param callFrame the call frame
+	 * @param logger the logger
+	 */
 	public CallStateRemoteHangup(String id, Call callFrame, ProxyLogger logger) {
 		super(id, callFrame, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#closeAction()
+	 */
 	@Override
 	public void closeAction() {
 		call.setState(call.TERMINATED);

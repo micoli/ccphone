@@ -18,20 +18,49 @@ import org.vertx.java.core.net.NetServer;
 import org.vertx.java.core.net.NetSocket;
 import org.vertx.java.core.sockjs.SockJSServer;
 
+/**
+ * The Class VertX.
+ */
 public class VertX {
+
+	/** The logger. */
 	static private ProxyLogger logger;
+
+	/** The vertx. */
 	static public Vertx vertx;
+
+	/** The eb. */
 	static private EventBus eb;
+
+	/** The mapper. */
 	static private ObjectMapper mapper = new ObjectMapper();
+
+	/** The gui event address. */
 	static private String guiEventAddress = "calls";
+
+	/** The action address. */
 	static private String actionAddress = "action";
+
+	/** The http server. */
 	static private HttpServer httpServer;
+
+	/** The net server. */
 	static private NetServer netServer;
 
+	/**
+	 * Publish gui.
+	 *
+	 * @param jsonObject the json object
+	 */
 	public static void publishGui(JsonObject jsonObject){
 		eb.publish(guiEventAddress, jsonObject);
 	}
 
+	/**
+	 * Inits the.
+	 *
+	 * @param prmLogger the prm logger
+	 */
 	public static void init(ProxyLogger prmLogger) {
 		logger = prmLogger;
 
@@ -113,6 +142,9 @@ public class VertX {
 		sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"),permitted, permitted);
 	}
 
+	/**
+	 * Run.
+	 */
 	public static void run(){
 		logger.info("start");
 		httpServer.listen(8080);

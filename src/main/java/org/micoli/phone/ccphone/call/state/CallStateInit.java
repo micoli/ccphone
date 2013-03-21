@@ -22,12 +22,26 @@ package org.micoli.phone.ccphone.call.state;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateInit.
+ */
 public class CallStateInit extends CallState {
 
+	/**
+	 * Instantiates a new call state init.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallStateInit(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#callAction()
+	 */
 	@Override
 	public void callAction() {
 		call.setState(call.UAC);
@@ -36,6 +50,9 @@ public class CallStateInit extends CallState {
 		//frame.setVisible(true);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#incomingCall()
+	 */
 	@Override
 	public void incomingCall() {
 		call.setState(call.UAS);

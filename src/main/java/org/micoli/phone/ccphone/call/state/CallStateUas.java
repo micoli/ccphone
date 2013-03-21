@@ -22,24 +22,44 @@ package org.micoli.phone.ccphone.call.state;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallStateUas.
+ */
 public class CallStateUas extends CallState {
 
+	/**
+	 * Instantiates a new call state uas.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallStateUas(String id, Call call, ProxyLogger logger) {
 		super(id, call, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#pickupAction()
+	 */
 	@Override
 	public void pickupAction() {
 		call.setState(call.SUCCESS);
 		call.pickup();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#busyHereAction()
+	 */
 	@Override
 	public void busyHereAction() {
 		call.setState(call.TERMINATED);
 		call.busyHere();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.call.state.CallState#remoteHangup()
+	 */
 	@Override
 	public void remoteHangup() {
 		call.setState(call.REMOTE_HANGUP);

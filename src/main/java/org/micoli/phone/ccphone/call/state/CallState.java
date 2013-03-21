@@ -25,24 +25,77 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class CallState.
+ */
 public abstract class CallState extends AbstractState {
 
+	/** The call. */
 	protected Call call;
 
+	/**
+	 * Instantiates a new call state.
+	 *
+	 * @param id the id
+	 * @param call the call
+	 * @param logger the logger
+	 */
 	public CallState(String id, Call call, ProxyLogger logger) {
 		super(id, logger);
 		this.call = call;
 	}
 
+	/**
+	 * Call action.
+	 */
 	public void callAction() {}
+	
+	/**
+	 * Incoming call.
+	 */
 	public void incomingCall() {}
+	
+	/**
+	 * Callee pickup.
+	 */
 	public void calleePickup() {}
+	
+	/**
+	 * Error.
+	 *
+	 * @param sipResponse the sip response
+	 */
 	public void error(SipResponse sipResponse) {}
+	
+	/**
+	 * Pickup action.
+	 */
 	public void pickupAction() {}
+	
+	/**
+	 * Busy here action.
+	 */
 	public void busyHereAction() {}
+	
+	/**
+	 * Hangup action.
+	 */
 	public void hangupAction() {}
+	
+	/**
+	 * Remote hangup.
+	 */
 	public void remoteHangup() {}
+	
+	/**
+	 * Close action.
+	 */
 	public void closeAction() {}
+	
+	/**
+	 * Ringing.
+	 */
 	public void ringing() {}
 
 }

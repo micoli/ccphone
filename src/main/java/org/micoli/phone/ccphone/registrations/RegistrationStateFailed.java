@@ -21,12 +21,26 @@ package org.micoli.phone.ccphone.registrations;
 
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class RegistrationStateFailed.
+ */
 public class RegistrationStateFailed extends RegistrationState {
 
+	/**
+	 * Instantiates a new registration state failed.
+	 *
+	 * @param id the id
+	 * @param registration the registration
+	 * @param logger the logger
+	 */
 	public RegistrationStateFailed(String id, Registration registration, ProxyLogger logger) {
 		super(id, registration, logger);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.micoli.phone.ccphone.registrations.RegistrationState#registerSent()
+	 */
 	@Override
 	public void registerSent() {
 		registration.setState(registration.REGISTERING);

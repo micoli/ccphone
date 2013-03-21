@@ -50,14 +50,34 @@ import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AsyncEventManager.
+ */
 public class AsyncEventManager implements SipListener {
 
+	/** The user agent. */
 	private UserAgent userAgent;
+	
+	/** The calls. */
 	private Map<String, Call> calls;
+	
+	/** The closed. */
 	private boolean closed;
+	
+	/** The logger. */
 	private ProxyLogger logger;
+	
+	/** The main. */
 	Main main;
 
+	/**
+	 * Instantiates a new async event manager.
+	 *
+	 * @param main the main
+	 * @param peersHome the peers home
+	 * @param logger the logger
+	 */
 	public AsyncEventManager(Main main, String peersHome, ProxyLogger logger) {
 		this.main = main;
 		this.logger = logger;
@@ -73,6 +93,12 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	/**
+	 * Gets the sip request from call id.
+	 *
+	 * @param callId the call id
+	 * @return the sip request from call id
+	 */
 	SipRequest getSipRequestFromCallId(String callId){
 		SipRequest sipRequest = null;
 		if(calls.containsKey(callId)){
@@ -81,27 +107,39 @@ public class AsyncEventManager implements SipListener {
 		return sipRequest;
 	}
 
+	/**
+	 * Gets the call.
+	 *
+	 * @param sipMessage the sip message
+	 * @return the call
+	 */
 	private Call getCall(SipMessage sipMessage) {
 		String callId = Utils.getMessageCallId(sipMessage);
 		return calls.get(callId);
 	}
 
 	/**
-	 * sip registration vent
+	 * sip registration vent.
+	 *
+	 * @param sipRequest the sip request
 	 */
 	public void registering(SipRequest sipRequest) {
 		VertX.publishGui(JsonMapper.sipRequest("registering",sipRequest));
 	}
 
 	/**
-	 * sip registration vent
+	 * sip registration vent.
+	 *
+	 * @param sipResponse the sip response
 	 */
 	public synchronized void registerFailed(SipResponse sipResponse) {
 		VertX.publishGui(JsonMapper.sipResponse("registerFailed",sipResponse));
 	}
 
 	/**
-	 * sip registration vent
+	 * sip registration vent.
+	 *
+	 * @param sipResponse the sip response
 	 */
 	public synchronized void registerSuccessful(SipResponse sipResponse) {
 		VertX.publishGui(JsonMapper.sipResponse("registerSuccessful",sipResponse));
@@ -113,7 +151,9 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	/**
-	 * sip event
+	 * sip event.
+	 *
+	 * @param sipResponse the sip response
 	 */
 	public synchronized void calleePickup(SipResponse sipResponse) {
 		Call call = getCall(sipResponse);
@@ -123,7 +163,9 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	/**
-	 * sip event
+	 * sip event.
+	 *
+	 * @param sipResponse the sip response
 	 */
 	public synchronized void error(SipResponse sipResponse) {
 		Call call = getCall(sipResponse);
@@ -133,7 +175,10 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	/**
-	 * sip event
+	 * sip event.
+	 *
+	 * @param sipRequest the sip request
+	 * @param provResponse the prov response
 	 */
 	public synchronized void incomingCall(final SipRequest sipRequest, SipResponse provResponse) {
 		SipHeaderFieldValue from = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
@@ -146,7 +191,9 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	/**
-	 * sip event
+	 * sip event.
+	 *
+	 * @param sipRequest the sip request
 	 */
 	public synchronized void remoteHangup(SipRequest sipRequest) {
 		Call call = getCall(sipRequest);
@@ -157,7 +204,9 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	/**
-	 * sip event
+	 * sip event.
+	 *
+	 * @param sipResponse the sip response
 	 */
 	public synchronized void ringing(SipResponse sipResponse) {
 		Call call = getCall(sipResponse);
@@ -167,6 +216,11 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	// main frame events
+	/**
+	 * Register.
+	 *
+	 * @throws SipUriSyntaxException the sip uri syntax exception
+	 */
 	public void register() throws SipUriSyntaxException {
 		if (userAgent == null) {
 			// if several peers instances are launched concurrently,
@@ -179,6 +233,9 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	/**
+	 * Window closed.
+	 */
 	public synchronized void windowClosed() {
 		try {
 			userAgent.getUac().unregister();
@@ -199,6 +256,11 @@ public class AsyncEventManager implements SipListener {
 		thread.start();
 	}
 
+	/**
+	 * Call action.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public synchronized void callAction(Message<JsonObject> message) {
 		String uri = message.body.getString("uri");
@@ -218,6 +280,11 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	/**
+	 * List calls action.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public synchronized void listCallsAction(Message<JsonObject> message) {
 		JsonObject jsonList = new JsonObject();
@@ -233,12 +300,22 @@ public class AsyncEventManager implements SipListener {
 		VertX.publishGui(new JsonObject().putObject("list", jsonList));
 	}
 
+	/**
+	 * Hangup action.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public synchronized void hangupAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUac().terminate(sipRequest);
 	}
 
+	/**
+	 * Pickup action.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public synchronized void pickupAction(Message<JsonObject> message) {
 		//SipRequest sipRequest = new SipRequest(null, null);
@@ -250,12 +327,22 @@ public class AsyncEventManager implements SipListener {
 		userAgent.getUas().acceptCall(sipRequest, dialog);
 	}
 
+	/**
+	 * Busy here action.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public synchronized void busyHereAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUas().rejectCall(sipRequest);
 	}
 
+	/**
+	 * Dtmf.
+	 *
+	 * @param message the message
+	 */
 	@Action
 	public void dtmf(Message<JsonObject> message) {
 		MediaManager mediaManager = userAgent.getMediaManager();

@@ -35,18 +35,29 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.tools.ProxyLogger;
 
+// TODO: Auto-generated Javadoc
 /**
  * AccountFrame, edited with NetBeans IDE.
  * @author yohann
  */
 public class AccountFrame extends javax.swing.JFrame {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The logger. */
 	private ProxyLogger logger;
+	
+	/** The registration label. */
 	private String registrationLabel = "";
 
-	/** Creates new form AccountFrame */
+	/**
+	 * Creates new form AccountFrame.
+	 *
+	 * @param actionListener the action listener
+	 * @param userAgent the user agent
+	 * @param logger the logger
+	 */
 	public AccountFrame(ActionListener actionListener, UserAgent userAgent, ProxyLogger logger) {
 		this.userAgent = userAgent;
 		this.logger = logger;
@@ -137,6 +148,9 @@ public class AccountFrame extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>
 
+	/**
+	 * Apply new config.
+	 */
 	private void applyNewConfig() {
 		Config config = userAgent.getConfig();
 		String userpart = jTextField1.getText();
@@ -188,10 +202,20 @@ public class AccountFrame extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 * Registering.
+	 *
+	 * @param sipRequest the sip request
+	 */
 	public void registering(SipRequest sipRequest) {
 		registration.registerSent();
 	}
 
+	/**
+	 * Register success.
+	 *
+	 * @param sipResponse the sip response
+	 */
 	public synchronized void registerSuccess(SipResponse sipResponse) {
 		if (unregistering) {
 			userAgent.close();
@@ -201,6 +225,11 @@ public class AccountFrame extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 * Register failed.
+	 *
+	 * @param sipResponse the sip response
+	 */
 	public void registerFailed(SipResponse sipResponse) {
 		if (unregistering) {
 			userAgent.close();
@@ -210,6 +239,11 @@ public class AccountFrame extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 * J button1 action performed.
+	 *
+	 * @param evt the evt
+	 */
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
 		Runnable runnable;
 		if (userAgent.isRegistered()) {
@@ -238,27 +272,60 @@ public class AccountFrame extends javax.swing.JFrame {
 		SwingUtilities.invokeLater(runnable);
 	}
 
+	/**
+	 * J button2 action performed.
+	 *
+	 * @param evt the evt
+	 */
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
 		dispose();
 	}
 
 	// Variables declaration - do not modify
+	/** The j button1. */
 	private javax.swing.JButton jButton1;
+	
+	/** The j button2. */
 	private javax.swing.JButton jButton2;
+	
+	/** The j label1. */
 	private javax.swing.JLabel jLabel1;
+	
+	/** The j label2. */
 	private javax.swing.JLabel jLabel2;
+	
+	/** The j label3. */
 	private javax.swing.JLabel jLabel3;
+	
+	/** The j label4. */
 	private javax.swing.JLabel jLabel4;
+	
+	/** The j label5. */
 	private javax.swing.JLabel jLabel5;
+	
+	/** The j label6. */
 	private javax.swing.JLabel jLabel6;
+	
+	/** The j password field1. */
 	private javax.swing.JPasswordField jPasswordField1;
+	
+	/** The j text field1. */
 	private javax.swing.JTextField jTextField1;
+	
+	/** The j text field2. */
 	private javax.swing.JTextField jTextField2;
+	
+	/** The j text field4. */
 	private javax.swing.JTextField jTextField4;
 	// End of variables declaration
 
+	/** The unregistering. */
 	private boolean unregistering;
+	
+	/** The user agent. */
 	private UserAgent userAgent;
+	
+	/** The registration. */
 	private Registration registration;
 
 }
