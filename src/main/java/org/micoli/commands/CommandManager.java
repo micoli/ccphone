@@ -1,4 +1,4 @@
-package org.micoli.phone.tools;
+package org.micoli.commands;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.micoli.phone.ccphone.remote.VertX;
+import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
@@ -19,19 +20,15 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 
-/**
- * The Class ActionManager.
- */
-public class ActionManager {
-	/** The list command. */
+public class CommandManager {
 	public static HashMap<String, Method> listGUICommand = new HashMap<String, Method>();
 	public static HashMap<String, Method> listShellCommand = new HashMap<String, Method>();
 	public static HashMap<String, Object> listShellContainer = new HashMap<String, Object>();
 
 	public static void runShellCommand(String commandName, String args) {
 		if (listShellCommand.containsKey(commandName)) {
-			Method method = ActionManager.listShellCommand.get(commandName);
-			Object container = ActionManager.listShellContainer.get(commandName);
+			Method method = CommandManager.listShellCommand.get(commandName);
+			Object container = CommandManager.listShellContainer.get(commandName);
 			try {
 				JSAP jsap = new JSAP();
 				Map<String, Object> map = new HashMap<String,Object>();
@@ -50,9 +47,9 @@ public class ActionManager {
 
 				for (int i = 0; i < parameterAnnotations.length; i++) {
 					for (final Annotation annotation : parameterAnnotations[i]) {
-						if (annotation instanceof ActionParameter) {
+						if (annotation instanceof Command) {
 							try {
-								String parameterName = ((ActionParameter) annotation).value();
+								String parameterName = ((Command) annotation).value();
 								jsap.registerParameter(new FlaggedOption(parameterName).setLongFlag(parameterName));
 							} catch (JSAPException e) {
 								e.printStackTrace();
@@ -71,17 +68,17 @@ public class ActionManager {
 
 					final Annotation[] annotations = parameterAnnotations[i];
 					for (final Annotation annotation : annotations) {
-						if (annotation instanceof ActionParameter) {
-							param[i] = config.getString(((ActionParameter) annotation).value());
+						if (annotation instanceof Command) {
+							param[i] = config.getString(((Command) annotation).value());
 						}
 					}
 				}
 				if(param.length<argNumber){
-					System.out.println("SHELL2 >"+ ActionManager.listShellCommand.get(commandName)+" not enough Annonation parameters");
+					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" not enough Annonation parameters");
 				}else if(param.length>argNumber){
-					System.out.println("SHELL2 >"+ ActionManager.listShellCommand.get(commandName)+" not enough parameters "+map.keySet().toString());
+					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" not enough parameters "+map.keySet().toString());
 				}else{
-					System.out.println("SHELL2 >"+ ActionManager.listShellCommand.get(commandName));
+					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName));
 					for(int j=0;j<param.length;j++){
 						System.out.println(String.format("[%d] %s", j,param[j].toString()));
 					}
@@ -98,7 +95,7 @@ public class ActionManager {
 						case 9: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6],param[7],param[8]); break;
 						case 10: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6],param[7],param[8],param[9]); break;
 						default:
-							System.out.println("SHELL2 >"+ ActionManager.listShellCommand.get(commandName)+" more than 10 parameters");
+							System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" more than 10 parameters");
 						break;
 					}
 				}
@@ -120,19 +117,19 @@ public class ActionManager {
 	 */
 	public static void scan(final Object container, final ProxyLogger logger) {
 		for (Method method : container.getClass().getMethods()) {
-			if (method.isAnnotationPresent(Action.class)) {
-				Action annotation = method.getAnnotation(Action.class);
+			if (method.isAnnotationPresent(Command.class)) {
+				Command annotation = method.getAnnotation(Command.class);
 				annotation.annotationType().toString();
 				final String MethodName = method.getName();
 
-				HashSet<Action.Type> actions = new HashSet<Action.Type>(
+				HashSet<Command.Type> commands = new HashSet<Command.Type>(
 						Arrays.asList(annotation.type()));
 
-				if (actions.contains(Action.Type.SHELL)) {
+				if (commands.contains(Command.Type.SHELL)) {
 					listShellCommand.put(MethodName, method);
 					listShellContainer.put(MethodName, container);
 				}
-				if (actions.contains(Action.Type.GUI)) {
+				if (commands.contains(Command.Type.GUI)) {
 					listGUICommand.put(MethodName, method);
 					logger.info("init guiaction." + method.getName());
 					VertX.vertx.eventBus().registerHandler(
@@ -143,7 +140,7 @@ public class ActionManager {
 										logger.info("init guiaction."
 												+ MethodName + " "
 												+ event.body.encode());
-										ActionManager.listGUICommand.get(
+										CommandManager.listGUICommand.get(
 												MethodName).invoke(container,
 												event);
 									} catch (IllegalAccessException

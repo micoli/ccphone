@@ -249,7 +249,7 @@ public class Call {
 	}
 
 	/**
-	 * Action performed.
+	 * Command performed.
 	 *
 	 * @param e the e
 	 */

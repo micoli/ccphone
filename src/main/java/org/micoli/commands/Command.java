@@ -1,4 +1,4 @@
-package org.micoli.phone.tools;
+package org.micoli.commands;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,11 +9,12 @@ import java.lang.annotation.Target;
  * The Interface QDCommand.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Action {
+@Target({ElementType.METHOD,ElementType.PARAMETER})
+public @interface Command {
 
 	public static enum Type { GUI, SHELL, WEB };
 
+	public String value() default "";
 	public Type[] type() default Type.GUI;
 
 	/**

@@ -2,7 +2,7 @@ package org.micoli.phone.ccphone.remote;
 
 import java.io.File;
 
-import org.micoli.phone.tools.ActionManager;
+import org.micoli.commands.CommandManager;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
@@ -131,7 +131,7 @@ public class VertX {
 						if (commands[0].equalsIgnoreCase("exit")) {
 							socket.close();
 						} else {
-							ActionManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim());
+							CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim());
 						}
 					}
 				});

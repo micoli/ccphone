@@ -40,11 +40,10 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
+import org.micoli.commands.Command;
+import org.micoli.commands.CommandManager;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.Action;
-import org.micoli.phone.tools.ActionManager;
-import org.micoli.phone.tools.ActionParameter;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.eventbus.Message;
@@ -85,7 +84,7 @@ public class AsyncEventManager implements SipListener {
 		calls = Collections.synchronizedMap(new HashMap<String,Call>());
 		closed = false;
 		// create sip stack
-		ActionManager.scan(this,logger);
+		CommandManager.scan(this,logger);
 		try {
 			String name;
 			name = System.getProperty("user.name");
@@ -267,7 +266,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Command
 	public synchronized void callAction(Message<JsonObject> message) {
 		String uri = message.body.getString("uri");
 		uri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR + uri + RFC3261.AT + main.config.getDomain();
@@ -286,27 +285,27 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
-	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
-	public synchronized void testAction(@ActionParameter("a1")String arg1) {
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized void testAction(@Command("a1")String arg1) {
 		System.out.println("testAction SHELL test" + arg1.toString());
 	}
 
-	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
-	public synchronized void testAction2(@ActionParameter("a1")String arg1,@ActionParameter("a2")String arg2) {
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized void testAction2(@Command("a1")String arg1,@Command("a2")String arg2) {
 		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString());
 	}
 
-	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
-	public synchronized void testAction3(@ActionParameter("a1")String arg1,@ActionParameter("a2")String arg2,@ActionParameter("a3")String arg3) {
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized void testAction3(@Command("a1")String arg1,@Command("a2")String arg2,@Command("a3")String arg3) {
 		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
 	}
 
-	@Action
+	@Command
 	public synchronized void muteAction(Message<JsonObject> message) {
 		userAgent.getSoundManager().mute(true);
 	}
 
-	@Action
+	@Command
 	public synchronized void unmuteAction(Message<JsonObject> message) {
 		userAgent.getSoundManager().mute(false);
 	}
@@ -315,7 +314,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized void listCallsAction(Message<JsonObject> message) {
 		JsonObject jsonList = new JsonObject();
 		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
@@ -335,7 +334,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Command
 	public synchronized void hangupAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUac().terminate(sipRequest);
@@ -346,7 +345,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Command
 	public synchronized void pickupAction(Message<JsonObject> message) {
 		//SipRequest sipRequest = new SipRequest(null, null);
 		//sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(msgCallId));
@@ -362,7 +361,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Command
 	public synchronized void busyHereAction(Message<JsonObject> message) {
 		SipRequest sipRequest = getSipRequestFromCallId(message.body.getString("sipcallid"));
 		userAgent.getUas().rejectCall(sipRequest);
@@ -373,7 +372,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Command
 	public void dtmf(Message<JsonObject> message) {
 		MediaManager mediaManager = userAgent.getMediaManager();
 		mediaManager.sendDtmf(message.body.getString("dmtfDigit").charAt(0));
