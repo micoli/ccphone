@@ -5,13 +5,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface QDCommand.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Action {
+
+	public static enum Type { GUI, SHELL, WEB };
+
+	public Type[] type() default Type.GUI;
 
 	/**
 	 * Description.
@@ -33,12 +36,5 @@ public @interface Action {
 	 * @return the string
 	 */
 	public String help() default "";
-
-	/**
-	 * Permissions.
-	 *
-	 * @return the string[]
-	 */
-	//public String[] permissions();
 
 }

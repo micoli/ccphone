@@ -57,28 +57,28 @@ public class Main {
 	static {
 		System.setProperty("apple.awt.UIElement", "true");
 	}
-	
+
 	/** The event manager. */
 	private AsyncEventManager eventManager ;
-	
+
 	/** The registration. */
 	private Registration registration;
-	
+
 	/** The logger. */
 	private ProxyLogger logger;
-	
+
 	/** The tray. */
 	private SystemTray tray = null;
-	
+
 	/** The tray icon. */
 	private TrayIcon trayIcon;
-	
+
 	/** The peers home. */
 	private String peersHome;
-	
+
 	/** The vert x. */
 	VertX vertX;
-	
+
 	/** The config. */
 	public XmlConfig config;
 

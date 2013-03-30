@@ -3,6 +3,7 @@ package org.micoli.phone.ccphone.remote;
 import java.io.File;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.micoli.phone.tools.ActionManager;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
@@ -129,6 +130,8 @@ public class VertX {
 						socket.write(command);
 						if (command.equalsIgnoreCase("exit")) {
 							socket.close();
+						} else {
+							ActionManager.runShellCommand(command, "I hope this helps.");
 						}
 					}
 				});
@@ -148,6 +151,6 @@ public class VertX {
 	public static void run(){
 		logger.info("start");
 		httpServer.listen(8080);
-		netServer.listen(1234);
+		netServer.listen(8081);
 	}
 }
