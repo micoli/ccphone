@@ -19,7 +19,6 @@
 
 package org.micoli.phone.ccphone;
 
-import java.net.SocketException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -78,6 +77,7 @@ public class AsyncEventManager implements SipListener {
 	 * @param peersHome the peers home
 	 * @param logger the logger
 	 */
+	@SuppressWarnings("unused")
 	public AsyncEventManager(Main main, String peersHome, ProxyLogger logger) {
 		this.main = main;
 		this.logger = logger;
@@ -86,8 +86,13 @@ public class AsyncEventManager implements SipListener {
 		// create sip stack
 		ActionManager.scan(this,logger);
 		try {
+			String name;
+			name = System.getProperty("user.name");
+			System.out.println(name);
+			System.out.println(peersHome);
+
 			userAgent = new UserAgent(this, peersHome, logger);
-		} catch (SocketException e) {
+		} catch (Exception e) {
 			logger.error("Peers sip port " + "unavailable, about to leave");
 			System.exit(1);
 		}
@@ -280,6 +285,11 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
+	public synchronized void testAction(String args) {
+		System.out.println("eeeeeeeeeeeee" + args.toString());
+	}
+
 	@Action
 	public synchronized void muteAction(Message<JsonObject> message) {
 		userAgent.getSoundManager().mute(true);
@@ -294,7 +304,7 @@ public class AsyncEventManager implements SipListener {
 	 *
 	 * @param message the message
 	 */
-	@Action
+	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
 	public synchronized void listCallsAction(Message<JsonObject> message) {
 		JsonObject jsonList = new JsonObject();
 		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
