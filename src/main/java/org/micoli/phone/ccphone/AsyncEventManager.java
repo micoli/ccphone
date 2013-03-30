@@ -44,6 +44,7 @@ import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.Action;
 import org.micoli.phone.tools.ActionManager;
+import org.micoli.phone.tools.ActionParameter;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.eventbus.Message;
@@ -286,8 +287,18 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
-	public synchronized void testAction(String args) {
-		System.out.println("eeeeeeeeeeeee" + args.toString());
+	public synchronized void testAction(@ActionParameter("a1")String arg1) {
+		System.out.println("testAction SHELL test" + arg1.toString());
+	}
+
+	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
+	public synchronized void testAction2(@ActionParameter("a1")String arg1,@ActionParameter("a2")String arg2) {
+		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString());
+	}
+
+	@Action(type = { Action.Type.GUI, Action.Type.SHELL })
+	public synchronized void testAction3(@ActionParameter("a1")String arg1,@ActionParameter("a2")String arg2,@ActionParameter("a3")String arg3) {
+		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
 	}
 
 	@Action

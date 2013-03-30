@@ -2,7 +2,6 @@ package org.micoli.phone.ccphone.remote;
 
 import java.io.File;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.micoli.phone.tools.ActionManager;
 import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
@@ -33,14 +32,12 @@ public class VertX {
 	/** The eb. */
 	static private EventBus eb;
 
-	/** The mapper. */
-	static private ObjectMapper mapper = new ObjectMapper();
-
 	/** The gui event address. */
 	static private String guiEventAddress = "calls";
 
 	/** The action address. */
-	static private String actionAddress = "action";
+	@SuppressWarnings("unused")
+	static private String actionAddress = "guiaction";
 
 	/** The http server. */
 	static private HttpServer httpServer;
@@ -126,12 +123,15 @@ public class VertX {
 			public void handle(final NetSocket socket) {
 				socket.dataHandler(new Handler<Buffer>() {
 					public void handle(Buffer buffer) {
-						String command = buffer.toString().replace("\n", "").replace("\r", "");
-						socket.write(command);
-						if (command.equalsIgnoreCase("exit")) {
+						//JSAP jsap = new JSAP();
+						String commandStr = buffer.toString().replace("\n", "").replace("\r", "");
+						String commands[] = commandStr.split(" ");
+
+						socket.write("Command> "+commands[0]+"\n");
+						if (commands[0].equalsIgnoreCase("exit")) {
 							socket.close();
 						} else {
-							ActionManager.runShellCommand(command, "I hope this helps.");
+							ActionManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim());
 						}
 					}
 				});
