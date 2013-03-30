@@ -1,13 +1,19 @@
 package org.micoli.commands;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.ProxyLogger;
@@ -24,87 +30,86 @@ public class CommandManager {
 	public static HashMap<String, Method> listGUICommand = new HashMap<String, Method>();
 	public static HashMap<String, Method> listShellCommand = new HashMap<String, Method>();
 	public static HashMap<String, Object> listShellContainer = new HashMap<String, Object>();
+	public static HashMap<String, JSAP> listShellJsap = new HashMap<String, JSAP>();
 
-	public static void runShellCommand(String commandName, String args) {
+	public static String getStackTrace(Throwable aThrowable) {
+		final Writer result = new StringWriter();
+		final PrintWriter printWriter = new PrintWriter(result);
+		aThrowable.printStackTrace(printWriter);
+		return result.toString();
+	}
+
+	private static void addLine(String prefix,ArrayList<String> lines,String line){
+		System.out.println(line);
+		lines.add(String.format("%s %s", prefix,line));
+	}
+
+	public static ArrayList<String> runShellCommand(String commandName, String args) {
+		ArrayList<String> lines = new ArrayList<String>();
 		if (listShellCommand.containsKey(commandName)) {
 			Method method = CommandManager.listShellCommand.get(commandName);
 			Object container = CommandManager.listShellContainer.get(commandName);
 			try {
-				JSAP jsap = new JSAP();
-				Map<String, Object> map = new HashMap<String,Object>();
-				if(commandName.equals("testAction")){
-					args="--a1=baaaa1";
-				}
-				if(commandName.equals("testAction2")){
-					args="--a1 baaaa1 --a2 baaaa2";
-				}
-				if(commandName.equals("testAction3")){
-					args="--a2=baaaa1 --a1 baaaa2 --a3=baaaa3";
-				}
+				JSAP jsap = listShellJsap.get(commandName);
+
+				JSAPResult config = jsap.parse(args);
+				int argCount = method.getParameterTypes().length;
 
 				final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 				final Object[] param = new Object[parameterAnnotations.length];
-
+				int numberMapped = 0;
 				for (int i = 0; i < parameterAnnotations.length; i++) {
-					for (final Annotation annotation : parameterAnnotations[i]) {
+					param[i] = null;
+					final Annotation[] annotations = parameterAnnotations[i];
+					for (final Annotation annotation : annotations) {
 						if (annotation instanceof Command) {
-							try {
-								String parameterName = ((Command) annotation).value();
-								jsap.registerParameter(new FlaggedOption(parameterName).setLongFlag(parameterName));
-							} catch (JSAPException e) {
-								e.printStackTrace();
+							if(config.contains(((Command) annotation).value())){
+								param[i] = config.getString(((Command) annotation).value());
+								numberMapped++;
 							}
 						}
 					}
 				}
-				JSAPResult config = jsap.parse(args);
-				int argNumber = method.getParameterTypes().length;
 
-				System.out.println("SHELL1 >" + commandName+ " " +jsap.getUsage());
-				System.out.println(String.format("SHELL1 >%s [%d]", args,argNumber));
-
-				for (int i = 0; i < parameterAnnotations.length; i++) {
-					param[i] = null;
-
-					final Annotation[] annotations = parameterAnnotations[i];
-					for (final Annotation annotation : annotations) {
-						if (annotation instanceof Command) {
-							param[i] = config.getString(((Command) annotation).value());
-						}
+				if(param.length!=argCount || numberMapped!=param.length){
+					if(param.length<argCount){
+						addLine("..",lines,CommandManager.listShellCommand.get(commandName)+" not enough Annonation parameters");
+					}else{
+						addLine("..",lines,CommandManager.listShellCommand.get(commandName)+" not enough parameters ");
 					}
-				}
-				if(param.length<argNumber){
-					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" not enough Annonation parameters");
-				}else if(param.length>argNumber){
-					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" not enough parameters "+map.keySet().toString());
+					lines.addAll(getShellCommands(commandName));
 				}else{
-					System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName));
-					for(int j=0;j<param.length;j++){
-						System.out.println(String.format("[%d] %s", j,param[j].toString()));
-					}
-					switch(argNumber){
-						case 0: method.invoke(container); break;
-						case 1: method.invoke(container,param[0]); break;
-						case 2: method.invoke(container,param[0],param[1]); break;
-						case 3: method.invoke(container,param[0],param[1],param[2]); break;
-						case 4: method.invoke(container,param[0],param[1],param[2],param[3]); break;
-						case 5: method.invoke(container,param[0],param[1],param[2],param[3],param[4]); break;
-						case 6: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5]); break;
-						case 7: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6]); break;
-						case 8: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6],param[7]); break;
-						case 9: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6],param[7],param[8]); break;
-						case 10: method.invoke(container,param[0],param[1],param[2],param[3],param[4],param[5],param[6],param[7],param[8],param[9]); break;
-						default:
-							System.out.println("SHELL2 >"+ CommandManager.listShellCommand.get(commandName)+" more than 10 parameters");
-						break;
-					}
+					String result = method.invoke(container,param).toString();
+					addLine("",lines, result);
 				}
 
-			} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				e.printStackTrace();
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				addLine("Error::",lines,getStackTrace(e));
 			}
 		}
+		return lines;
+	}
+
+	public static ArrayList<String> getShellCommands(String command) {
+		ArrayList<String> lines = new ArrayList<String>();
+		if(!command.equals("")){
+			if(listShellJsap.containsKey(command)){
+				addLine("::",lines,command+" "+listShellJsap.get(command).getUsage());
+				addLine("",lines,"");
+			}else{
+				addLine("",lines,"unknown command");
+			}
+		}else{
+			Iterator<Entry<String, JSAP>> iterator = listShellJsap.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry<String, JSAP> pairs = (Map.Entry<String, JSAP>)iterator.next();
+				addLine(">",lines,pairs.getKey());
+				addLine("",lines,pairs.getValue().getUsage());
+				addLine("",lines,"");
+			}
+		}
+
+		return lines;
 	}
 
 	/**
@@ -128,6 +133,21 @@ public class CommandManager {
 				if (commands.contains(Command.Type.SHELL)) {
 					listShellCommand.put(MethodName, method);
 					listShellContainer.put(MethodName, container);
+					JSAP jsap = new JSAP();
+					final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+					for (int i = 0; i < parameterAnnotations.length; i++) {
+						for (final Annotation cmdAnnotation : parameterAnnotations[i]) {
+							if (annotation instanceof Command) {
+								try {
+									String parameterName = ((Command) cmdAnnotation).value();
+									jsap.registerParameter(new FlaggedOption(parameterName).setLongFlag(parameterName));
+								} catch (JSAPException e) {
+									System.out.println(getStackTrace(e));
+								}
+							}
+						}
+					}
+					listShellJsap.put(MethodName,jsap);
 				}
 				if (commands.contains(Command.Type.GUI)) {
 					listGUICommand.put(MethodName, method);

@@ -1,6 +1,8 @@
 package org.micoli.phone.ccphone.remote;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.micoli.commands.CommandManager;
 import org.micoli.phone.tools.ProxyLogger;
@@ -121,18 +123,20 @@ public class VertX {
 
 		netServer = vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
 			public void handle(final NetSocket socket) {
+				socket.write("> ");
 				socket.dataHandler(new Handler<Buffer>() {
 					public void handle(Buffer buffer) {
-						//JSAP jsap = new JSAP();
 						String commandStr = buffer.toString().replace("\n", "").replace("\r", "");
 						String commands[] = commandStr.split(" ");
 
-						socket.write("Command> "+commands[0]+"\n");
 						if (commands[0].equalsIgnoreCase("exit")) {
 							socket.close();
+						} else if (commands[0].equalsIgnoreCase("help")) {
+							writeArrayListSocket(socket,CommandManager.getShellCommands( commandStr.substring(commands[0].length()).trim()));
 						} else {
-							CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim());
+							writeArrayListSocket(socket,CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim()));
 						}
+						socket.write("> ");
 					}
 				});
 			}
@@ -145,6 +149,12 @@ public class VertX {
 		sockJSServer.bridge(new JsonObject().putString("prefix", "/eventbus"),permitted, permitted);
 	}
 
+	private static void writeArrayListSocket(NetSocket socket,ArrayList<String> lines){
+		Iterator<String> iterator = lines.iterator();
+		while (iterator.hasNext()) {
+			socket.write(iterator.next()+"\n");
+		}
+	}
 	/**
 	 * Run.
 	 */

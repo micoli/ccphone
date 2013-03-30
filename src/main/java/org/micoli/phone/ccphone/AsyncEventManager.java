@@ -77,7 +77,6 @@ public class AsyncEventManager implements SipListener {
 	 * @param peersHome the peers home
 	 * @param logger the logger
 	 */
-	@SuppressWarnings("unused")
 	public AsyncEventManager(Main main, String peersHome, ProxyLogger logger) {
 		this.main = main;
 		this.logger = logger;
@@ -286,18 +285,18 @@ public class AsyncEventManager implements SipListener {
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void testAction(@Command("a1")String arg1) {
-		System.out.println("testAction SHELL test" + arg1.toString());
+	public synchronized String testAction(@Command("a1")String arg1) {
+		return ("testAction SHELL test" + arg1.toString());
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void testAction2(@Command("a1")String arg1,@Command("a2")String arg2) {
-		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString());
+	public synchronized String testAction2(@Command("a1")String arg1,@Command("a2")String arg2) {
+		return ("testAction SHELL test" + arg1.toString()+ " "+arg2.toString());
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void testAction3(@Command("a1")String arg1,@Command("a2")String arg2,@Command("a3")String arg3) {
-		System.out.println("testAction SHELL test" + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
+	public synchronized String testAction3(@Command("a1")String arg1,@Command("a2")String arg2,@Command("a3")String arg3) {
+		return ("testAction SHELL test" + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
 	}
 
 	@Command
