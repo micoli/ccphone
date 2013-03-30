@@ -22,20 +22,9 @@ package org.micoli.phone.ccphone.call;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
-import javax.swing.SwingUtilities;
-
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-import org.micoli.phone.ccphone.call.state.CallState;
-import org.micoli.phone.ccphone.call.state.CallStateFailed;
-import org.micoli.phone.ccphone.call.state.CallStateInit;
-import org.micoli.phone.ccphone.call.state.CallStateRemoteHangup;
-import org.micoli.phone.ccphone.call.state.CallStateRinging;
-import org.micoli.phone.ccphone.call.state.CallStateSuccess;
-import org.micoli.phone.ccphone.call.state.CallStateTerminated;
-import org.micoli.phone.ccphone.call.state.CallStateUac;
-import org.micoli.phone.ccphone.call.state.CallStateUas;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
@@ -48,49 +37,49 @@ public class Call {
 
 	/** The Constant HANGUP_ACTION_COMMAND. */
 	public static final String HANGUP_ACTION_COMMAND    = "hangup";
-	
+
 	/** The Constant PICKUP_ACTION_COMMAND. */
 	public static final String PICKUP_ACTION_COMMAND    = "pickup";
-	
+
 	/** The Constant BUSY_HERE_ACTION_COMMAND. */
 	public static final String BUSY_HERE_ACTION_COMMAND = "busyhere";
-	
+
 	/** The Constant CLOSE_ACTION_COMMAND. */
 	public static final String CLOSE_ACTION_COMMAND     = "close";
 
 	/** The state. */
-	private CallState state;
+	private String state;
 
 	/** The init. */
-	public final CallState INIT;
-	
+	// public final CallState INIT;
+
 	/** The uac. */
-	public final CallState UAC;
-	
+	// public final CallState UAC;
+
 	/** The uas. */
-	public final CallState UAS;
-	
+	// public final CallState UAS;
+
 	/** The ringing. */
-	public final CallState RINGING;
-	
+	// public final CallState RINGING;
+
 	/** The success. */
-	public final CallState SUCCESS;
-	
+	// public final CallState SUCCESS;
+
 	/** The failed. */
-	public final CallState FAILED;
-	
+	// public final CallState FAILED;
+
 	/** The remote hangup. */
-	public final CallState REMOTE_HANGUP;
-	
+	// public final CallState REMOTE_HANGUP;
+
 	/** The terminated. */
-	public final CallState TERMINATED;
+	// public final CallState TERMINATED;
 
 	/** The sip request. */
 	private SipRequest sipRequest;
-	
+
 	/** The call frame listener. */
 	private CallListener callFrameListener;
-	
+
 	/** The call id. */
 	private String callId;
 
@@ -103,22 +92,22 @@ public class Call {
 	 */
 	public Call(String remoteParty, String id, ProxyLogger logger) {
 		this.callId = id;
-		INIT = new CallStateInit(id, this, logger);
-		UAC = new CallStateUac(id, this, logger);
-		UAS = new CallStateUas(id, this, logger);
-		RINGING = new CallStateRinging(id, this, logger);
-		SUCCESS = new CallStateSuccess(id, this, logger);
-		FAILED = new CallStateFailed(id, this, logger);
-		REMOTE_HANGUP = new CallStateRemoteHangup(id, this, logger);
-		TERMINATED = new CallStateTerminated(id, this, logger);
-		state = INIT;
+		/*
+		 * INIT = new CallStateInit(id, this, logger); UAC = new
+		 * CallStateUac(id, this, logger); UAS = new CallStateUas(id, this,
+		 * logger); RINGING = new CallStateRinging(id, this, logger); SUCCESS =
+		 * new CallStateSuccess(id, this, logger); FAILED = new
+		 * CallStateFailed(id, this, logger); REMOTE_HANGUP = new
+		 * CallStateRemoteHangup(id, this, logger); TERMINATED = new
+		 * CallStateTerminated(id, this, logger); state = INIT;
+		 */
 	}
 
 	/**
 	 * Call action.
 	 */
 	public void callAction() {
-		state.callAction();
+		setState("callAction");
 		HashMap<String,String> additional = new HashMap<String,String>();
 		additional.put("callId",callId );
 		VertX.publishGui(JsonMapper.sipRequest("setSipRequest",getSipRequest(),additional));
@@ -139,14 +128,15 @@ public class Call {
 	 * @return the call state
 	 */
 	public String getCallState() {
-		return state.getClass().getSimpleName();
+		return state;
 	}
 
 	/**
 	 * Incoming call.
 	 */
 	public void incomingCall() {
-		state.incomingCall();
+		setState("incomingCall");
+
 		//SipHeaderFieldValue from = getSipRequest().getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_FROM));
 		//JsonObject jsonObject = JsonMapper.sipRequest("incomingCall",getSipRequest());
 		//jsonObject.putString("fromValue",from.getValue());
@@ -159,7 +149,7 @@ public class Call {
 	 * Remote hangup.
 	 */
 	public void remoteHangup() {
-		state.remoteHangup();
+		setState("remoteHangup");
 
 		VertX.publishGui(JsonMapper.sipRequest("remoteHangup",sipRequest));
 	}
@@ -170,7 +160,7 @@ public class Call {
 	 * @param sipResponse the sip response
 	 */
 	public void error(SipResponse sipResponse) {
-		state.error(sipResponse);
+		setState("error");// (sipResponse);
 
 		VertX.publishGui(JsonMapper.sipResponse("error",sipResponse));
 	}
@@ -181,7 +171,7 @@ public class Call {
 	 * @param sipResponse the sip response
 	 */
 	public void calleePickup(SipResponse sipResponse) {
-		state.calleePickup();
+		setState("calleePickup");
 		//JsonObject jsonObject = JsonMapper.sipResponse("calleePickup",sipResponse);
 		//jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
 		//VertX.publishGui(jsonObject);
@@ -194,7 +184,7 @@ public class Call {
 	 * @param sipResponse the sip response
 	 */
 	public void ringing(SipResponse sipResponse) {
-		state.ringing();
+		setState("ringing");
 		//JsonObject jsonObject = JsonMapper.sipResponse("ringing",sipResponse);
 		//jsonObject.putString("callId",Utils.getMessageCallId(sipResponse));
 		//VertX.publishGui(jsonObject);
@@ -234,8 +224,8 @@ public class Call {
 	 *
 	 * @param state the new state
 	 */
-	public void setState(CallState state) {
-		this.state.log(state);
+	public void setState(String state) {
+		// this.state.log(state);
 		this.state = state;
 	}
 
@@ -265,37 +255,10 @@ public class Call {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
-		Runnable runnable = null;
 		if (HANGUP_ACTION_COMMAND.equals(actionCommand)) {
-			runnable = new Runnable() {
-				@Override
-				public void run() {
-					state.hangupAction();
-				}
-			};
 		} else if (CLOSE_ACTION_COMMAND.equals(actionCommand)) {
-			runnable = new Runnable() {
-				@Override
-				public void run() {
-					state.closeAction();
-				}
-			};
 		} else if (PICKUP_ACTION_COMMAND.equals(actionCommand)) {
-			runnable = new Runnable() {
-				public void run() {
-					state.pickupAction();
-				}
-			};
 		} else if (BUSY_HERE_ACTION_COMMAND.equals(actionCommand)) {
-			runnable = new Runnable() {
-				@Override
-				public void run() {
-					state.busyHereAction();
-				}
-			};
-		}
-		if (runnable != null) {
-			SwingUtilities.invokeLater(runnable);
 		}
 	}
 }

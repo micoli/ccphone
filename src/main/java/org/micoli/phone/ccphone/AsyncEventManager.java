@@ -58,16 +58,16 @@ public class AsyncEventManager implements SipListener {
 
 	/** The user agent. */
 	private UserAgent userAgent;
-	
+
 	/** The calls. */
 	private Map<String, Call> calls;
-	
+
 	/** The closed. */
 	private boolean closed;
-	
+
 	/** The logger. */
 	private ProxyLogger logger;
-	
+
 	/** The main. */
 	Main main;
 
@@ -280,6 +280,15 @@ public class AsyncEventManager implements SipListener {
 		}
 	}
 
+	@Action
+	public synchronized void muteAction(Message<JsonObject> message) {
+		userAgent.getSoundManager().mute(true);
+	}
+
+	@Action
+	public synchronized void unmuteAction(Message<JsonObject> message) {
+		userAgent.getSoundManager().mute(false);
+	}
 	/**
 	 * List calls action.
 	 *
