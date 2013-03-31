@@ -2,6 +2,7 @@ package org.micoli.phone.ccphone.remote;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.micoli.commands.CommandManager;
@@ -62,6 +63,7 @@ public class VertX {
 	 * @param prmLogger the prm logger
 	 */
 	public static void init(ProxyLogger prmLogger) {
+		final HashMap <String,Boolean> logged = new HashMap <String,Boolean>();
 		logger = prmLogger;
 
 		vertx = Vertx.newVertx("localhost");
@@ -120,7 +122,6 @@ public class VertX {
 				}
 			}
 		});
-
 		netServer = vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
 			public void handle(final NetSocket socket) {
 				socket.write("> ");
@@ -129,12 +130,25 @@ public class VertX {
 						String commandStr = buffer.toString().replace("\n", "").replace("\r", "");
 						String commands[] = commandStr.split(" ");
 
-						if (commands[0].equalsIgnoreCase("exit")) {
+						if (commands[0].equalsIgnoreCase("login")) {
+							if(logged.containsKey(socket.writeHandlerID)){
+								socket.write("already Logged in\n");
+							}else{
+								if(CommandManager.runLoginCommand(commandStr.substring(commands[0].length()).trim())){
+									logged.put(socket.writeHandlerID,true);
+									socket.write("Logged in\n");
+								}else{
+									socket.write("can not Logged in\n");
+								}
+							}
+						} else if (commands[0].equalsIgnoreCase("exit")) {
 							socket.close();
-						} else if (commands[0].equalsIgnoreCase("help")) {
-							writeArrayListSocket(socket,CommandManager.getShellCommands( commandStr.substring(commands[0].length()).trim()));
 						} else {
-							writeArrayListSocket(socket,CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim()));
+							if(logged.containsKey(socket.writeHandlerID)){
+								writeArrayListSocket(socket,CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim()));
+							}else{
+								socket.write("Not Logged\n");
+							}
 						}
 						socket.write("> ");
 					}

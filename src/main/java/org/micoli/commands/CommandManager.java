@@ -28,9 +28,7 @@ import com.martiansoftware.jsap.JSAPResult;
 
 public class CommandManager {
 	public static HashMap<String, Method> listGUICommand = new HashMap<String, Method>();
-	public static HashMap<String, Method> listShellCommand = new HashMap<String, Method>();
-	public static HashMap<String, Object> listShellContainer = new HashMap<String, Object>();
-	public static HashMap<String, JSAP> listShellJsap = new HashMap<String, JSAP>();
+	public static HashMap<String, CommandContainer> listShellCommand = new HashMap<String, CommandContainer>();
 
 	public static String getStackTrace(Throwable aThrowable) {
 		final Writer result = new StringWriter();
@@ -45,12 +43,21 @@ public class CommandManager {
 	}
 
 	public static ArrayList<String> runShellCommand(String commandName, String args) {
+
+		if (commandName.equalsIgnoreCase("help")) {
+			return CommandManager.getShellCommands(args);
+		}
+
+		if (commandName.equalsIgnoreCase("login")) {
+			return CommandManager.getShellCommands(args);
+		}
+
 		ArrayList<String> lines = new ArrayList<String>();
 		if (listShellCommand.containsKey(commandName)) {
-			Method method = CommandManager.listShellCommand.get(commandName);
-			Object container = CommandManager.listShellContainer.get(commandName);
+			Method method = CommandManager.listShellCommand.get(commandName).method;
+			Object container = CommandManager.listShellCommand.get(commandName).container;
 			try {
-				JSAP jsap = listShellJsap.get(commandName);
+				JSAP jsap = listShellCommand.get(commandName).jsap;
 
 				JSAPResult config = jsap.parse(args);
 				int argCount = method.getParameterTypes().length;
@@ -86,25 +93,37 @@ public class CommandManager {
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				addLine("Error::",lines,getStackTrace(e));
 			}
+		}else{
+			addLine("..",lines,String.format("Unknown command [%s], try help",commandName));
 		}
 		return lines;
+	}
+
+	public static boolean runLoginCommand(String args) {
+		String commands[] = args.split(" ");
+		if(commands.length==2){
+			if(commands[0].equals("root") && commands[1].equals("root")){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static ArrayList<String> getShellCommands(String command) {
 		ArrayList<String> lines = new ArrayList<String>();
 		if(!command.equals("")){
-			if(listShellJsap.containsKey(command)){
-				addLine("::",lines,command+" "+listShellJsap.get(command).getUsage());
+			if(listShellCommand.containsKey(command)){
+				addLine("::",lines,command+" "+listShellCommand.get(command).jsap.getUsage());
 				addLine("",lines,"");
 			}else{
 				addLine("",lines,"unknown command");
 			}
 		}else{
-			Iterator<Entry<String, JSAP>> iterator = listShellJsap.entrySet().iterator();
+			Iterator<Entry<String, CommandContainer>> iterator = listShellCommand.entrySet().iterator();
 			while (iterator.hasNext()) {
-				Map.Entry<String, JSAP> pairs = (Map.Entry<String, JSAP>)iterator.next();
+				Map.Entry<String, CommandContainer> pairs = (Map.Entry<String, CommandContainer>)iterator.next();
 				addLine(">",lines,pairs.getKey());
-				addLine("",lines,pairs.getValue().getUsage());
+				addLine("",lines,pairs.getValue().jsap.getUsage());
 				addLine("",lines,"");
 			}
 		}
@@ -131,8 +150,6 @@ public class CommandManager {
 						Arrays.asList(annotation.type()));
 
 				if (commands.contains(Command.Type.SHELL)) {
-					listShellCommand.put(MethodName, method);
-					listShellContainer.put(MethodName, container);
 					JSAP jsap = new JSAP();
 					final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 					for (int i = 0; i < parameterAnnotations.length; i++) {
@@ -147,7 +164,7 @@ public class CommandManager {
 							}
 						}
 					}
-					listShellJsap.put(MethodName,jsap);
+					listShellCommand.put(MethodName, new CommandContainer(method,container,jsap));
 				}
 				if (commands.contains(Command.Type.GUI)) {
 					listGUICommand.put(MethodName, method);
