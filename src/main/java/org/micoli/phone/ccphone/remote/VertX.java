@@ -79,9 +79,7 @@ public class VertX {
 
 		eb.registerHandler(guiEventAddress, myHandler);
 
-		httpServer = vertx.createHttpServer();
-
-		httpServer.requestHandler(new Handler<HttpServerRequest>() {
+		httpServer = vertx.createHttpServer().requestHandler(new Handler<HttpServerRequest>() {
 			public void handle(HttpServerRequest req) {
 				logger.debug("HttpServerRequest path " + req.path);
 				String internalPath = req.path;
@@ -122,6 +120,7 @@ public class VertX {
 				}
 			}
 		});
+
 		netServer = vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
 			public void handle(final NetSocket socket) {
 				socket.write("> ");
@@ -132,13 +131,13 @@ public class VertX {
 
 						if (commands[0].equalsIgnoreCase("login")) {
 							if(logged.containsKey(socket.writeHandlerID)){
-								socket.write("already Logged in\n");
+								socket.write("Already Logged in\n");
 							}else{
 								if(CommandManager.runLoginCommand(commandStr.substring(commands[0].length()).trim())){
 									logged.put(socket.writeHandlerID,true);
 									socket.write("Logged in\n");
 								}else{
-									socket.write("can not Logged in\n");
+									socket.write("Can not Logged in\n");
 								}
 							}
 						} else if (commands[0].equalsIgnoreCase("exit")) {
@@ -147,7 +146,7 @@ public class VertX {
 							if(logged.containsKey(socket.writeHandlerID)){
 								writeArrayListSocket(socket,CommandManager.runShellCommand(commands[0], commandStr.substring(commands[0].length()).trim()));
 							}else{
-								socket.write("Not Logged\n");
+								socket.write("Not Logged in\n");
 							}
 						}
 						socket.write("> ");

@@ -291,12 +291,12 @@ public class AsyncEventManager implements SipListener {
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized String testAction2(@Command("a1")String arg1,@Command("a2")String arg2) {
-		return ("testAction SHELL test" + arg1.toString()+ " "+arg2.toString());
+		return ("testAction SHELL test " + arg1.toString()+ " "+arg2.toString());
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized String testAction3(@Command("a1")String arg1,@Command("a2")String arg2,@Command("a3")String arg3) {
-		return ("testAction SHELL test" + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
+		return ("testAction SHELL test " + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
 	}
 
 	@Command
@@ -308,13 +308,9 @@ public class AsyncEventManager implements SipListener {
 	public synchronized void unmuteAction(Message<JsonObject> message) {
 		userAgent.getSoundManager().mute(false);
 	}
-	/**
-	 * List calls action.
-	 *
-	 * @param message the message
-	 */
+
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void listCallsAction(Message<JsonObject> message) {
+	public synchronized void listCallsAction() {
 		JsonObject jsonList = new JsonObject();
 		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
 		while (it.hasNext()) {

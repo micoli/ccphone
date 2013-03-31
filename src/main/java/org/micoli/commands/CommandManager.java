@@ -86,8 +86,8 @@ public class CommandManager {
 					}
 					lines.addAll(getShellCommands(commandName));
 				}else{
-					String result = method.invoke(container,param).toString();
-					addLine("",lines, result);
+					Object result = method.invoke(container,param).toString();
+					addLine("",lines, result.toString());
 				}
 
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -169,32 +169,23 @@ public class CommandManager {
 				if (commands.contains(Command.Type.GUI)) {
 					listGUICommand.put(MethodName, method);
 					logger.info("init guiaction." + method.getName());
-					VertX.vertx.eventBus().registerHandler(
-							"guiaction." + method.getName(),
-							new Handler<Message<JsonObject>>() {
-								public void handle(Message<JsonObject> event) {
-									try {
-										logger.info("init guiaction."
-												+ MethodName + " "
-												+ event.body.encode());
-										CommandManager.listGUICommand.get(
-												MethodName).invoke(container,
-												event);
-									} catch (IllegalAccessException
-											| IllegalArgumentException
-											| InvocationTargetException e) {
-										logger.error(
-												"handle guiaction "
-														+ MethodName + " "
-														+ event.body.encode(),
-												e);
-									}
-								}
-							});
+					VertX.vertx.eventBus().registerHandler("guiaction." + method.getName(),new Handler<Message<JsonObject>>() {
+						public void handle(Message<JsonObject> event) {
+							try {
+								logger.info("init guiaction."+ MethodName + " "+ event.body.encode());
+								CommandManager.listGUICommand.get(MethodName).invoke(container,event);
+							} catch (IllegalAccessException
+									| IllegalArgumentException
+									| InvocationTargetException e) {
+								logger.error("handle guiaction "+ MethodName + " "+ event.body.encode(),e);
+							}
+						}
+					});
 				}
 			}
 		}
 	}
+
 	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 	private static String hashPP(final Map<String,Object> m, String... offset) {
 		String retval = "";
