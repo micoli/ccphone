@@ -46,7 +46,6 @@ import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 import org.micoli.phone.tools.ProxyLogger;
-import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
 // TODO: Auto-generated Javadoc
@@ -260,27 +259,13 @@ public class AsyncEventManager implements SipListener {
 		thread.start();
 	}
 
-	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized String testAction(@Command("a1")String arg1) {
-		return ("testAction SHELL test" + arg1.toString());
-	}
-
-	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized String testAction2(@Command("a1")String arg1,@Command("a2")String arg2) {
-		return ("testAction SHELL test " + arg1.toString()+ " "+arg2.toString());
-	}
-
-	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized String testAction3(@Command("a1")String arg1,@Command("a2")String arg2,@Command("a3")String arg3) {
-		return ("testAction SHELL test " + arg1.toString()+ " "+arg2.toString()+ " "+arg3.toString());
-	}
 	/**
 	 * Call action.
 	 *
 	 * @param message the message
 	 */
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void callAction(@Command("uri") String uri) {
+	public synchronized String[] callAction(@Command("uri") String uri) {
 		uri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR + uri + RFC3261.AT + main.config.getDomain();
 		String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
 		Call call = new Call(uri, callId, logger);
@@ -293,34 +278,54 @@ public class AsyncEventManager implements SipListener {
 		} catch (SipUriSyntaxException e) {
 			logger.error(e.getMessage(), e);
 			VertX.publishGui(new JsonObject().putString("setSipRequestError", e.getMessage()));
-			return;
+			return new String[] { e.getMessage() };
 		}
-	}
-
-
-	@Command
-	public synchronized void muteAction(Message<JsonObject> message) {
-		userAgent.getSoundManager().mute(true);
-	}
-
-	@Command
-	public synchronized void unmuteAction(Message<JsonObject> message) {
-		userAgent.getSoundManager().mute(false);
+		return new String[] { "ok" };
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void listCallsAction() {
+	public synchronized String[] testAction(@Command("a1") String arg1) {
+		return new String[] { "testAction SHELL test" + arg1.toString() };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] testAction2(@Command("a1") String arg1, @Command("a2") String arg2) {
+		return new String[] { "testAction SHELL test " + arg1.toString() + " " + arg2.toString() };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] testAction3(@Command("a1") String arg1, @Command("a2") String arg2, @Command("a3") String arg3) {
+		return new String[] { "testAction SHELL test " + arg1.toString() + " " + arg2.toString() + " " + arg3.toString() };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] muteAction() {
+		// userAgent.getSoundManager().mute(true);
+		return new String[] { "ok" };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] unmuteAction() {
+		// userAgent.getSoundManager().mute(false);
+		return new String[] { "ok" };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] listCallsAction() {
+		String[] result = new String[calls.size()];
+		int n = 0;
 		JsonObject jsonList = new JsonObject();
+
 		Iterator<Entry<String, Call>> it = calls.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String,Call> pair = (Map.Entry<String,Call>)it.next();
 			Call call = pair.getValue();
-			jsonList.putObject(pair.getKey(),new JsonObject()
-				.putString("callid",call.getCallid())
-				.putString("state",call.getCallState())
-				);
+			jsonList.putObject(pair.getKey(), new JsonObject().putString("callid", call.getCallid()).putString("state", call.getCallState()));
+			result[n] = String.format("%s=>%s", call.getCallid(), call.getCallState());
+			n++;
 		}
 		VertX.publishGui(new JsonObject().putObject("list", jsonList));
+		return result;
 	}
 
 	/**
@@ -329,9 +334,10 @@ public class AsyncEventManager implements SipListener {
 	 * @param message the message
 	 */
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void hangupAction(@Command("sipcallid") String sipCallId) {
+	public synchronized String[] hangupAction(@Command("sipcallid") String sipCallId) {
 		SipRequest sipRequest = getSipRequestFromCallId(sipCallId);
 		userAgent.getUac().terminate(sipRequest);
+		return new String[] { "ok" };
 	}
 
 	/**
@@ -340,7 +346,7 @@ public class AsyncEventManager implements SipListener {
 	 * @param message the message
 	 */
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void pickupAction(@Command("sipcallid") String sipCallId) {
+	public synchronized String[] pickupAction(@Command("sipcallid") String sipCallId) {
 		//SipRequest sipRequest = new SipRequest(null, null);
 		//sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_CALLID),new SipHeaderFieldValue(msgCallId));
 		SipRequest sipRequest = getSipRequestFromCallId(sipCallId);
@@ -348,6 +354,7 @@ public class AsyncEventManager implements SipListener {
 		DialogManager dialogManager = userAgent.getDialogManager();
 		Dialog dialog = dialogManager.getDialog(callId);
 		userAgent.getUas().acceptCall(sipRequest, dialog);
+		return new String[] { "ok" };
 	}
 
 	/**
@@ -356,9 +363,10 @@ public class AsyncEventManager implements SipListener {
 	 * @param message the message
 	 */
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public synchronized void busyHereAction(@Command("sipcallid") String sipCallId) {
+	public synchronized String[] busyHereAction(@Command("sipcallid") String sipCallId) {
 		SipRequest sipRequest = getSipRequestFromCallId(sipCallId);
 		userAgent.getUas().rejectCall(sipRequest);
+		return new String[] { "ok" };
 	}
 
 	/**
@@ -367,9 +375,9 @@ public class AsyncEventManager implements SipListener {
 	 * @param message the message
 	 */
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
-	public void dtmf(@Command("sipcallid") String dtmfDigit) {
+	public String[] dtmf(@Command("dtmfdigit") String dtmfDigit) {
 		MediaManager mediaManager = userAgent.getMediaManager();
 		mediaManager.sendDtmf(dtmfDigit.charAt(0));
+		return new String[] { "ok" };
 	}
-
 }
