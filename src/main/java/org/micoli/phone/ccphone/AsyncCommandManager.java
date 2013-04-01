@@ -53,13 +53,13 @@ public class AsyncCommandManager {
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized String[] mute() {
-		// userAgent.getSoundManager().mute(true);
+		this.asyncEventManager.getUserAgent().getSoundManager().mute(true);
 		return new String[] { "ok" };
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized String[] unmute() {
-		// userAgent.getSoundManager().mute(false);
+		this.asyncEventManager.getUserAgent().getSoundManager().mute(false);
 		return new String[] { "ok" };
 	}
 

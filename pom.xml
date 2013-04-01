@@ -43,6 +43,11 @@
 			<version>1.6.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.micoli.phone</groupId>
+			<artifactId>peers-override</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sourceforge.peers</groupId>
 			<artifactId>peers-lib</artifactId>
 			<version>0.5-SNAPSHOT</version>

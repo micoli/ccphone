@@ -92,7 +92,7 @@ public class VertX {
 					String html = "";
 					Iterator<String> iterator = result.iterator();
 					while (iterator.hasNext()) {
-						html=html+iterator.next()+"<br/>\n";
+						html = html + iterator.next() + "<br/>\n";
 					}
 					req.response.end(html);
 					return;
