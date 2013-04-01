@@ -71,9 +71,7 @@ public class VertX {
 
 		Handler<Message<JsonObject>> myHandler = new Handler<Message<JsonObject>>() {
 			public void handle(Message<JsonObject> message) {
-				logger.info("VertX event due to registration : ["
-						+ message.body.getString("text") + "]\n"
-						+ message.body.toString());
+				//logger.info("VertX event received: [" + message.body.getString("text") + "]\n"+ message.body.toString());
 			}
 		};
 
@@ -85,6 +83,20 @@ public class VertX {
 				String internalPath = req.path;
 				String documentRoot = "src/main/resources/eventbus";
 
+				if (internalPath.startsWith("/api/")) {
+					String command = internalPath.replace("/api/","");
+					eb.publish(guiEventAddress, "test message published");
+					ArrayList<String>result = CommandManager.runShellCommand(command, req.params());
+					req.response.statusCode = 200;
+					req.response.headers().put("Content-Type", "text/html; charset=UTF-8");
+					String html = "";
+					Iterator<String> iterator = result.iterator();
+					while (iterator.hasNext()) {
+						html=html+iterator.next()+"<br/>\n";
+					}
+					req.response.end(html);
+					return;
+				}
 				if (internalPath.equals("/pub")) {
 					eb.publish(guiEventAddress, "test message published");
 					req.response.sendFile("src/main/resources/eventbus/null.html");

@@ -21,7 +21,7 @@ public class ProxyLogger extends Logger {
 	 * @see net.sourceforge.peers.Logger#debug(java.lang.String)
 	 */
 	public void debug(String message) {
-		System.out.println("DEBUG " + message);
+		//System.out.println("DEBUG " + message);
 	}
 
 	/* (non-Javadoc)

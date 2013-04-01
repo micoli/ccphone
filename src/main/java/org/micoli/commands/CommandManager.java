@@ -68,7 +68,7 @@ public class CommandManager {
 				Iterator<String> jsapIterator = jsap.getIDMap().idIterator(); jsapIterator.hasNext();) {
 					String parameterName = jsapIterator.next();
 					if (config.contains(parameterName)) {
-						System.out.println(String.format("%d => %s", i, parameterName));
+						//System.out.println(String.format("%d => %s", i, parameterName));
 						param[i] = config.getString(parameterName);
 						i++;
 					} else {
@@ -109,16 +109,15 @@ public class CommandManager {
 		if(!command.equals("")){
 			if (listCommand.containsKey(command)) {
 				addLine("::", lines, command + " " + listCommand.get(command).getJsap().getUsage());
-				addLine("",lines,"");
 			}else{
 				addLine("",lines,"unknown command");
 			}
 		}else{
+			addLine("",lines,"=== Actions ===");
 			Iterator<Entry<String, CommandContainer>> iterator = listCommand.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map.Entry<String, CommandContainer> pairs = (Map.Entry<String, CommandContainer>)iterator.next();
-				addLine(">",lines,pairs.getKey());
-				addLine("", lines, pairs.getValue().getJsap().getUsage());
+				addLine(":: ",lines,pairs.getKey()+" "+pairs.getValue().getJsap().getUsage());
 				addLine("",lines,"");
 			}
 		}
@@ -138,6 +137,8 @@ public class CommandManager {
 		boolean parametersOK;
 		for (Method method : container.getClass().getMethods()) {
 			if (method.isAnnotationPresent(Command.class)) {
+				String parametersStr = "";
+				String parametersStrSepa = "";
 				parametersOK = true;
 				Command annotation = method.getAnnotation(Command.class);
 				annotation.annotationType().toString();
@@ -148,14 +149,14 @@ public class CommandManager {
 				JSAP jsap = new JSAP();
 				int nbJsapArg = 0;
 				final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-				System.out.println(">method " + method.getName());
 				for (int i = 0; i < parameterAnnotations.length; i++) {
 					for (final Annotation cmdAnnotation : parameterAnnotations[i]) {
 						if (annotation instanceof Command) {
 							try {
 								String parameterName = ((Command) cmdAnnotation).value();
 								jsap.registerParameter(new FlaggedOption(parameterName).setLongFlag(parameterName));
-								System.out.println(">prm Command " + parameterName);
+								parametersStr = parametersStr+ parametersStrSepa+ parameterName;
+								parametersStrSepa =",";
 								nbJsapArg++;
 							} catch (JSAPException e) {
 								System.out.println(getStackTrace(e));
@@ -166,18 +167,20 @@ public class CommandManager {
 
 				if (nbJsapArg != method.getParameterTypes().length) {
 					parametersOK = false;
-					System.out.println(String.format(">>>>Error, not enough command arguments anonation on %s.%s (%s!=%d)", container.getClass().getCanonicalName(), MethodName, nbJsapArg, method.getParameterTypes().length));
+					logger.error(String.format("Not enough command arguments anonation on %s.%s (%s!=%d)", container.getClass().getCanonicalName(), MethodName, nbJsapArg, method.getParameterTypes().length));
 				}
 
 				if (parametersOK) {
+					logger.info(String.format("Registering method %s(%s)" ,method.getName(),parametersStr));
 					listCommand.put(MethodName, new CommandContainer(method, container, jsap, nbJsapArg));
 					if (commands.contains(Command.Type.SHELL)) {
+						logger.info("    SHELLAction." + method.getName());
 						listShellCommand.add(MethodName);
 					}
 
 					if (commands.contains(Command.Type.GUI)) {
 						listGUICommand.add(MethodName);
-						logger.info("init guiaction." + method.getName());
+						logger.info("    GUIAction." + method.getName());
 						VertX.vertx.eventBus().registerHandler("guiaction." + method.getName(), new Handler<Message<JsonObject>>() {
 							public void handle(Message<JsonObject> event) {
 								try {
