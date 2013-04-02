@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.micoli.commands.CommandManager;
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
@@ -27,7 +27,7 @@ import org.vertx.java.core.sockjs.SockJSServer;
 public class VertX {
 
 	/** The logger. */
-	static private ProxyLogger logger;
+	static private Logger logger;
 
 	/** The vertx. */
 	static public Vertx vertx;
@@ -62,7 +62,7 @@ public class VertX {
 	 *
 	 * @param prmLogger the prm logger
 	 */
-	public static void init(ProxyLogger prmLogger) {
+	public static void init(Logger prmLogger) {
 		final HashMap <String,Boolean> logged = new HashMap <String,Boolean>();
 		logger = prmLogger;
 

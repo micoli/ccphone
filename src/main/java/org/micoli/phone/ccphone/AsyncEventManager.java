@@ -38,7 +38,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,7 +56,7 @@ public class AsyncEventManager implements SipListener {
 	private boolean closed;
 
 	/** The logger. */
-	private ProxyLogger logger;
+	private Logger logger;
 
 	/** The main. */
 	Main main;
@@ -69,7 +69,7 @@ public class AsyncEventManager implements SipListener {
 	 * @param main the main
 	 * @param logger the logger
 	 */
-	public AsyncEventManager(Main main, ProxyLogger logger) {
+	public AsyncEventManager(Main main, Logger logger) {
 		this.main = main;
 		this.logger = logger;
 		setCalls(Collections.synchronizedMap(new HashMap<String,Call>()));

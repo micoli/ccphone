@@ -20,7 +20,7 @@
 package org.micoli.phone.ccphone.registrations;
 
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 import org.vertx.java.core.json.JsonObject;
 
 // TODO: Auto-generated Javadoc
@@ -36,7 +36,7 @@ public class RegistrationStateRegistering extends RegistrationState {
 	 * @param registration the registration
 	 * @param logger the logger
 	 */
-	public RegistrationStateRegistering(String id, Registration registration, ProxyLogger logger) {
+	public RegistrationStateRegistering(String id, Registration registration, Logger logger) {
 		super(id, registration, logger);
 	}
 

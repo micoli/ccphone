@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
@@ -33,7 +34,6 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.registrations.Registration;
-import org.micoli.phone.tools.ProxyLogger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -46,8 +46,8 @@ public class AccountFrame extends javax.swing.JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/** The logger. */
-	private ProxyLogger logger;
-	
+	private Logger logger;
+
 	/** The registration label. */
 	private String registrationLabel = "";
 
@@ -58,7 +58,7 @@ public class AccountFrame extends javax.swing.JFrame {
 	 * @param userAgent the user agent
 	 * @param logger the logger
 	 */
-	public AccountFrame(ActionListener actionListener, UserAgent userAgent, ProxyLogger logger) {
+	public AccountFrame(ActionListener actionListener, UserAgent userAgent, Logger logger) {
 		this.userAgent = userAgent;
 		this.logger = logger;
 		unregistering = false;
@@ -284,47 +284,47 @@ public class AccountFrame extends javax.swing.JFrame {
 	// Variables declaration - do not modify
 	/** The j button1. */
 	private javax.swing.JButton jButton1;
-	
+
 	/** The j button2. */
 	private javax.swing.JButton jButton2;
-	
+
 	/** The j label1. */
 	private javax.swing.JLabel jLabel1;
-	
+
 	/** The j label2. */
 	private javax.swing.JLabel jLabel2;
-	
+
 	/** The j label3. */
 	private javax.swing.JLabel jLabel3;
-	
+
 	/** The j label4. */
 	private javax.swing.JLabel jLabel4;
-	
+
 	/** The j label5. */
 	private javax.swing.JLabel jLabel5;
-	
+
 	/** The j label6. */
 	private javax.swing.JLabel jLabel6;
-	
+
 	/** The j password field1. */
 	private javax.swing.JPasswordField jPasswordField1;
-	
+
 	/** The j text field1. */
 	private javax.swing.JTextField jTextField1;
-	
+
 	/** The j text field2. */
 	private javax.swing.JTextField jTextField2;
-	
+
 	/** The j text field4. */
 	private javax.swing.JTextField jTextField4;
 	// End of variables declaration
 
 	/** The unregistering. */
 	private boolean unregistering;
-	
+
 	/** The user agent. */
 	private UserAgent userAgent;
-	
+
 	/** The registration. */
 	private Registration registration;
 

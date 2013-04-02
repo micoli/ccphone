@@ -21,7 +21,7 @@ package org.micoli.phone.ccphone.registrations;
 
 import net.sourceforge.peers.sip.AbstractState;
 
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -39,7 +39,7 @@ public abstract class RegistrationState extends AbstractState {
 	 * @param registration the registration
 	 * @param logger the logger
 	 */
-	public RegistrationState(String id, Registration registration, ProxyLogger logger) {
+	public RegistrationState(String id, Registration registration, Logger logger) {
 		super(id, logger);
 		this.registration = registration;
 	}

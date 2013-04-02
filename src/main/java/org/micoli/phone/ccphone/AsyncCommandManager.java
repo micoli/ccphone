@@ -16,13 +16,13 @@ import org.micoli.commands.Command;
 import org.micoli.commands.CommandManager;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 import org.vertx.java.core.json.JsonObject;
 
 public class AsyncCommandManager {
 	AsyncEventManager asyncEventManager;
-	ProxyLogger logger;
-	public AsyncCommandManager(AsyncEventManager asyncEventManager, ProxyLogger logger){
+	Logger logger;
+	public AsyncCommandManager(AsyncEventManager asyncEventManager, Logger logger){
 		this.asyncEventManager = asyncEventManager;
 		this.logger = logger;
 		CommandManager.scan(this,logger);

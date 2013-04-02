@@ -22,17 +22,12 @@ package org.micoli.phone.ccphone.call;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
-import org.micoli.phone.tools.ProxyLogger;
-
-// TODO: Auto-generated Javadoc
-/**
- * The Class Call.
- */
 public class Call {
 
 	/** The Constant HANGUP_ACTION_COMMAND. */
@@ -90,7 +85,7 @@ public class Call {
 	 * @param id the id
 	 * @param logger the logger
 	 */
-	public Call(String remoteParty, String id, ProxyLogger logger) {
+	public Call(String remoteParty, String id, Logger logger) {
 		this.callId = id;
 		/*
 		 * INIT = new CallStateInit(id, this, logger); UAC = new

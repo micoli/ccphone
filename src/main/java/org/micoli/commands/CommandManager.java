@@ -15,8 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sourceforge.peers.Logger;
+
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
@@ -133,7 +134,7 @@ public class CommandManager {
 	 * @param logger
 	 *            the logger
 	 */
-	public static void scan(final Object container, final ProxyLogger logger) {
+	public static void scan(final Object container, final Logger logger) {
 		boolean parametersOK;
 		for (Method method : container.getClass().getMethods()) {
 			if (method.isAnnotationPresent(Command.class)) {

@@ -53,15 +53,16 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
+import org.apache.log4j.Level;
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.ProxyLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -83,7 +84,7 @@ public class Main {
 	private Registration registration;
 
 	/** The logger. */
-	private ProxyLogger logger;
+	private Logger logger;
 
 	/** The tray. */
 	private SystemTray tray = null;
@@ -126,7 +127,8 @@ public class Main {
 		if (args.length > 0) {
 			peersHome = args[0];
 		}
-		logger = new ProxyLogger(peersHome);
+		logger = new Logger(peersHome);
+		logger.getLog4j().setLevel(Level.ALL);
 
 		loadConfig();
 

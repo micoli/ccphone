@@ -19,7 +19,7 @@
 
 package org.micoli.phone.ccphone.registrations;
 
-import org.micoli.phone.tools.ProxyLogger;
+import net.sourceforge.peers.Logger;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -34,7 +34,7 @@ public class RegistrationStateFailed extends RegistrationState {
 	 * @param registration the registration
 	 * @param logger the logger
 	 */
-	public RegistrationStateFailed(String id, Registration registration, ProxyLogger logger) {
+	public RegistrationStateFailed(String id, Registration registration, Logger logger) {
 		super(id, registration, logger);
 	}
 

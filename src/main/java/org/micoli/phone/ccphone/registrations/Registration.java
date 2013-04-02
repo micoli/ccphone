@@ -19,8 +19,9 @@
 
 package org.micoli.phone.ccphone.registrations;
 
+import net.sourceforge.peers.Logger;
+
 import org.micoli.phone.ccphone.remote.VertX;
-import org.micoli.phone.tools.ProxyLogger;
 import org.vertx.java.core.json.JsonObject;
 
 // TODO: Auto-generated Javadoc
@@ -31,19 +32,19 @@ public class Registration {
 
 	/** The unregistered. */
 	public final RegistrationState UNREGISTERED;
-	
+
 	/** The registering. */
 	public final RegistrationState REGISTERING;
-	
+
 	/** The success. */
 	public final RegistrationState SUCCESS;
-	
+
 	/** The failed. */
 	public final RegistrationState FAILED;
 
 	/** The label. */
 	protected String label;
-	
+
 	/** The state. */
 	private RegistrationState state;
 
@@ -53,7 +54,7 @@ public class Registration {
 	 * @param label the label
 	 * @param logger the logger
 	 */
-	public Registration(String label, ProxyLogger logger) {
+	public Registration(String label, Logger logger) {
 		this.label = label;
 
 		String id = String.valueOf(hashCode());
