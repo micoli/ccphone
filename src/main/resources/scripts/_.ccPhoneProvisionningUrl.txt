@@ -1,0 +1,5 @@
+<root>
+	<url>http://server/provisioning.php?user=%user%</url>
+	<user>xxx</user>
+	<password>yyy</password>
+</root>
