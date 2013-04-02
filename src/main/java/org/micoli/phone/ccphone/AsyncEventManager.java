@@ -67,21 +67,15 @@ public class AsyncEventManager implements SipListener {
 	 * Instantiates a new async event manager.
 	 *
 	 * @param main the main
-	 * @param peersHome the peers home
 	 * @param logger the logger
 	 */
-	public AsyncEventManager(Main main, String peersHome, ProxyLogger logger) {
+	public AsyncEventManager(Main main, ProxyLogger logger) {
 		this.main = main;
 		this.logger = logger;
 		setCalls(Collections.synchronizedMap(new HashMap<String,Call>()));
 		closed = false;
 		try {
-			String name;
-			name = System.getProperty("user.name");
-			System.out.println(name);
-			System.out.println(peersHome);
-
-			setUserAgent(new UserAgent(this, peersHome, logger));
+			this.userAgent = new UserAgent(this, main.config, logger);
 
 			asyncCommandManager= new AsyncCommandManager(this,logger);
 
@@ -101,10 +95,6 @@ public class AsyncEventManager implements SipListener {
 
 	public UserAgent getUserAgent() {
 		return userAgent;
-	}
-
-	public void setUserAgent(UserAgent userAgent) {
-		this.userAgent = userAgent;
 	}
 
 	/**

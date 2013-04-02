@@ -85,8 +85,12 @@ public class VertX {
 
 				if (internalPath.startsWith("/api/")) {
 					String command = internalPath.replace("/api/","");
-					eb.publish(guiEventAddress, "test message published");
-					ArrayList<String>result = CommandManager.runShellCommand(command, req.params());
+					ArrayList<String> result;
+					if (command.equals("")) {
+						result = CommandManager.getCommandsHelp("");
+					} else {
+						result = CommandManager.runShellCommand(command, req.params());
+					}
 					req.response.statusCode = 200;
 					req.response.headers().put("Content-Type", "text/html; charset=UTF-8");
 					String html = "";

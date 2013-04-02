@@ -2,4 +2,6 @@
 
 
 ++todo ++
-telnet server
+full embeded http client
+http provisionning
+
