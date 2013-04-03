@@ -65,12 +65,12 @@ public class CommandManager {
 
 				int i=0;
 				final Object[] param = new Object[nbArg];
+				Class<?>[] parametersType = method.getParameterTypes();
 				for (@SuppressWarnings("unchecked")
 				Iterator<String> jsapIterator = jsap.getIDMap().idIterator(); jsapIterator.hasNext();) {
 					String parameterName = jsapIterator.next();
 					if (config.contains(parameterName)) {
-						//System.out.println(String.format("%d => %s", i, parameterName));
-						param[i] = config.getString(parameterName);
+						param[i] = config.getParam(parameterName, parametersType[i].getName());
 						i++;
 					} else {
 						isArgOk = false;
@@ -149,13 +149,16 @@ public class CommandManager {
 				HashSet<Command.Type> commands = new HashSet<Command.Type>(Arrays.asList(annotation.type()));
 				JSAP jsap = new JSAP();
 				int nbJsapArg = 0;
+				Class<?>[] parametersType = method.getParameterTypes();
 				final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 				for (int i = 0; i < parameterAnnotations.length; i++) {
 					for (final Annotation cmdAnnotation : parameterAnnotations[i]) {
 						if (annotation instanceof Command) {
 							try {
 								String parameterName = ((Command) cmdAnnotation).value();
-								jsap.registerParameter(new FlaggedOption(parameterName).setLongFlag(parameterName));
+								FlaggedOption flaggedOption = new FlaggedOption(parameterName).setLongFlag(parameterName);
+								flaggedOption.setStringParser(CommandParameterMap.getStringParserFromClassName(parametersType[i].getName()));
+								jsap.registerParameter(flaggedOption);
 								parametersStr = parametersStr+ parametersStrSepa+ parameterName;
 								parametersStrSepa =",";
 								nbJsapArg++;
@@ -187,8 +190,6 @@ public class CommandManager {
 								try {
 									logger.info("init guiaction." + MethodName + " " + event.body.encode());
 									runShellCommand(MethodName, event.body.toMap());
-									// CommandManager.listCommand.get(MethodName).getMethod().invoke(container,
-									// event);
 								} catch (IllegalArgumentException e) {
 									logger.error("handle guiaction " + MethodName + " " + event.body.encode(), e);
 								}

@@ -1,5 +1,5 @@
-/*
-	This file is part of Peers, a java SIP softphone.
+/**
+	This file is an extends of Peers, a java SIP softphone.
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -14,6 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+	@author o.michaud
 	inspired from Yohann Martineau Copyright 2010
  */
 
@@ -55,12 +56,13 @@ import javax.xml.xpath.XPathFactory;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
-import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.apache.log4j.Level;
+import org.micoli.commands.Command;
+import org.micoli.commands.CommandManager;
 import org.micoli.phone.ccphone.registrations.Registration;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.w3c.dom.Document;
@@ -92,12 +94,6 @@ public class Main {
 	/** The tray icon. */
 	private TrayIcon trayIcon;
 
-	/** The peers home. */
-	private String peersHome;
-
-	/** The vert x. */
-	VertX vertX;
-
 	/** The config. */
 	public XmlConfig config;
 
@@ -122,23 +118,110 @@ public class Main {
 	 * @param args the args
 	 */
 	public Main(final String[] args) {
+		logger = new Logger("ccPhone");
+		setLogLevel(3);
 
-		peersHome = Utils.DEFAULT_PEERS_HOME;
-		if (args.length > 0) {
-			peersHome = args[0];
-		}
-		logger = new Logger(peersHome);
-		logger.getLog4j().setLevel(Level.ALL);
+		VertX.init(logger);
+
+		CommandManager.scan(this, logger);
 
 		loadConfig();
 
 		initTray();
 
-		launchThreads(args);
+		VertX.run();
 
 		if (configOk) {
 			initSIP();
 		}
+	}
+
+	private void initSIP() {
+		logger.info("Init SIP");
+		eventManager = new AsyncEventManager(Main.this, logger);
+		try {
+			eventManager.register();
+		} catch (SipUriSyntaxException e) {
+			logger.error("InitSIP SipUriSyntaxException", e);
+		}
+	}
+
+	/**
+	 * Inits the tray.
+	 */
+	private void initTray() {
+		if (tray != null) {
+			return;
+		}
+		if (!SystemTray.isSupported()) {
+			return;
+		}
+		final PopupMenu popup = new PopupMenu();
+		URL url = getClass().getResource("/org/micoli/phone/phone-icon-gray.png");
+		Image imageIcon = Toolkit.getDefaultToolkit().getImage(url);
+		trayIcon = new TrayIcon(imageIcon, "test");
+		tray = SystemTray.getSystemTray();
+
+		// Create a popup menu components
+		MenuItem aboutItem = new MenuItem("About");
+		MenuItem exitItem = new MenuItem("Exit");
+
+		popup.add(aboutItem);
+		popup.addSeparator();
+		popup.add(exitItem);
+
+		trayIcon.setPopupMenu(popup);
+
+		try {
+			tray.add(trayIcon);
+		} catch (AWTException e) {
+			logger.error("TrayIcon could not be added.");
+			return;
+		}
+
+		/*
+		 * trayIcon.addActionListener(new ActionListener() { public void
+		 * actionPerformed(ActionEvent e) { JOptionPane.showMessageDialog(null,
+		 * "This dialog box is run from System Tray"); } });
+		 */
+
+		aboutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "This dialog box is run from the About menu item");
+			}
+		});
+
+		exitItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tray.remove(trayIcon);
+				System.exit(0);
+			}
+		});
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] setLogLevel(@Command("level") int level) {
+		switch(level){
+		case 0:
+			logger.getLogger().setLevel(Level.OFF);
+			break;
+		case 1:
+			logger.getLogger().setLevel(Level.FATAL);
+			break;
+		case 2:
+			logger.getLogger().setLevel(Level.ERROR);
+			break;
+		case 3:
+			logger.getLogger().setLevel(Level.WARN);
+			break;
+		case 4:
+			logger.getLogger().setLevel(Level.INFO);
+			break;
+		case 5:
+			logger.getLogger().setLevel(Level.DEBUG);
+			break;
+		}
+		return new String[] { "ok" };
 	}
 	/**
 	 *
@@ -231,100 +314,13 @@ public class Main {
 			return nodes.item(0).getNodeValue();
 		}
 		return null;
-
-	}
-
-	/**
-	 * Launch threads.
-	 *
-	 * @param args the args
-	 */
-	private void launchThreads(final String[] args) {
-		VertX.init(logger);
-		VertX.run();
-
-		Thread thread = new Thread(new Runnable() {
-			public void run() {
-			}
-		});
-		thread.start();
-
-		try {
-			while (eventManager == null) {
-				Thread.sleep(50);
-			}
-		} catch (InterruptedException e) {
-			return;
-		}
-	}
-
-	private void initSIP() {
-		eventManager = new AsyncEventManager(Main.this, logger);
-
-		try {
-			eventManager.register();
-		} catch (SipUriSyntaxException e) {
-		}
-
-	}
-
-	/**
-	 * Inits the tray.
-	 */
-	private void initTray() {
-		if (tray != null) {
-			return;
-		}
-		if (!SystemTray.isSupported()) {
-			return;
-		}
-		final PopupMenu popup = new PopupMenu();
-		URL url = getClass().getResource("/org/micoli/phone/phone-icon-gray.png");
-		Image imageIcon = Toolkit.getDefaultToolkit().getImage(url);
-		trayIcon = new TrayIcon(imageIcon, "test");
-		tray = SystemTray.getSystemTray();
-
-		// Create a popup menu components
-		MenuItem aboutItem = new MenuItem("About");
-		MenuItem exitItem = new MenuItem("Exit");
-
-		popup.add(aboutItem);
-		popup.addSeparator();
-		popup.add(exitItem);
-
-		trayIcon.setPopupMenu(popup);
-
-		try {
-			tray.add(trayIcon);
-		} catch (AWTException e) {
-			logger.error("TrayIcon could not be added.");
-			return;
-		}
-
-		/*
-		 * trayIcon.addActionListener(new ActionListener() { public void
-		 * actionPerformed(ActionEvent e) { JOptionPane.showMessageDialog(null,
-		 * "This dialog box is run from System Tray"); } });
-		 */
-
-		aboutItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "This dialog box is run from the About menu item");
-			}
-		});
-
-		exitItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				tray.remove(trayIcon);
-				System.exit(0);
-			}
-		});
 	}
 
 	/**
 	 * Window closed.
-	 *
-	 * @param e the e
+	 * 
+	 * @param e
+	 *            the event
 	 */
 	public void windowClosed(WindowEvent e) {
 		eventManager.windowClosed();
