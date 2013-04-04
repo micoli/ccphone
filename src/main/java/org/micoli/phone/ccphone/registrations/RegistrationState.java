@@ -23,7 +23,7 @@ import net.sourceforge.peers.sip.AbstractState;
 
 import net.sourceforge.peers.Logger;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class RegistrationState.
  */

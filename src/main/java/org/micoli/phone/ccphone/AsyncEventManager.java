@@ -40,7 +40,7 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 import net.sourceforge.peers.Logger;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class AsyncEventManager.
  */

@@ -21,7 +21,7 @@ package org.micoli.phone.ccphone.registrations;
 
 import net.sourceforge.peers.Logger;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class RegistrationStateFailed.
  */

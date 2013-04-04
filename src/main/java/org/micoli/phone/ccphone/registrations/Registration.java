@@ -24,7 +24,6 @@ import net.sourceforge.peers.Logger;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.vertx.java.core.json.JsonObject;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Registration.
  */
@@ -58,12 +57,12 @@ public class Registration {
 		this.label = label;
 
 		String id = String.valueOf(hashCode());
+
 		UNREGISTERED = new RegistrationStateUnregsitered(id, this, logger);
 		state = UNREGISTERED;
 		REGISTERING = new RegistrationStateRegistering(id, this, logger);
 		SUCCESS = new RegistrationStateSuccess(id, this, logger);
 		FAILED = new RegistrationStateFailed(id, this, logger);
-
 	}
 
 	/**

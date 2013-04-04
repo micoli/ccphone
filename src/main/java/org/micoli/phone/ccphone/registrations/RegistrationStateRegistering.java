@@ -23,7 +23,7 @@ import org.micoli.phone.ccphone.remote.VertX;
 import net.sourceforge.peers.Logger;
 import org.vertx.java.core.json.JsonObject;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class RegistrationStateRegistering.
  */

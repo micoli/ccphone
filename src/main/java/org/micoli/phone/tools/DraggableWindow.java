@@ -10,7 +10,6 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class DraggableWindow.
  */
@@ -18,13 +17,13 @@ public class DraggableWindow {
 
 	/** The main frame. */
 	private JFrame mainFrame;
-	
+
 	/** The component. */
 	private Component fComponent;
-	
+
 	/** The d x. */
 	private int dX;
-	
+
 	/** The d y. */
 	private int dY;
 

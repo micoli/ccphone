@@ -30,50 +30,11 @@ import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
 public class Call {
 
-	/** The Constant HANGUP_ACTION_COMMAND. */
-	public static final String HANGUP_ACTION_COMMAND    = "hangup";
-
-	/** The Constant PICKUP_ACTION_COMMAND. */
-	public static final String PICKUP_ACTION_COMMAND    = "pickup";
-
-	/** The Constant BUSY_HERE_ACTION_COMMAND. */
-	public static final String BUSY_HERE_ACTION_COMMAND = "busyhere";
-
-	/** The Constant CLOSE_ACTION_COMMAND. */
-	public static final String CLOSE_ACTION_COMMAND     = "close";
-
 	/** The state. */
 	private String state;
 
-	/** The init. */
-	// public final CallState INIT;
-
-	/** The uac. */
-	// public final CallState UAC;
-
-	/** The uas. */
-	// public final CallState UAS;
-
-	/** The ringing. */
-	// public final CallState RINGING;
-
-	/** The success. */
-	// public final CallState SUCCESS;
-
-	/** The failed. */
-	// public final CallState FAILED;
-
-	/** The remote hangup. */
-	// public final CallState REMOTE_HANGUP;
-
-	/** The terminated. */
-	// public final CallState TERMINATED;
-
 	/** The sip request. */
 	private SipRequest sipRequest;
-
-	/** The call frame listener. */
-	private CallListener callFrameListener;
 
 	/** The call id. */
 	private String callId;
@@ -87,15 +48,6 @@ public class Call {
 	 */
 	public Call(String remoteParty, String id, Logger logger) {
 		this.callId = id;
-		/*
-		 * INIT = new CallStateInit(id, this, logger); UAC = new
-		 * CallStateUac(id, this, logger); UAS = new CallStateUas(id, this,
-		 * logger); RINGING = new CallStateRinging(id, this, logger); SUCCESS =
-		 * new CallStateSuccess(id, this, logger); FAILED = new
-		 * CallStateFailed(id, this, logger); REMOTE_HANGUP = new
-		 * CallStateRemoteHangup(id, this, logger); TERMINATED = new
-		 * CallStateTerminated(id, this, logger); state = INIT;
-		 */
 	}
 
 	/**
@@ -187,34 +139,6 @@ public class Call {
 	}
 
 	/**
-	 * Hangup.
-	 */
-	public void hangup() {
-		if (callFrameListener != null) {
-			callFrameListener.hangupAction(sipRequest);
-		}
-	}
-
-	/**
-	 * Pickup.
-	 */
-	public void pickup() {
-		if (callFrameListener != null && sipRequest != null) {
-			callFrameListener.pickupAction(sipRequest);
-		}
-	}
-
-	/**
-	 * Busy here.
-	 */
-	public void busyHere(){
-		if (callFrameListener != null && sipRequest != null) {
-			callFrameListener.busyHereAction(sipRequest);
-			sipRequest = null;
-		}
-	}
-
-	/**
 	 * Sets the state.
 	 *
 	 * @param state the new state
@@ -249,11 +173,5 @@ public class Call {
 	 * @param e the e
 	 */
 	public void actionPerformed(ActionEvent e) {
-		String actionCommand = e.getActionCommand();
-		if (HANGUP_ACTION_COMMAND.equals(actionCommand)) {
-		} else if (CLOSE_ACTION_COMMAND.equals(actionCommand)) {
-		} else if (PICKUP_ACTION_COMMAND.equals(actionCommand)) {
-		} else if (BUSY_HERE_ACTION_COMMAND.equals(actionCommand)) {
-		}
 	}
 }

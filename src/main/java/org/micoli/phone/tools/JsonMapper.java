@@ -14,12 +14,11 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.vertx.java.core.json.JsonObject;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class JsonMapper.
  */
 public class JsonMapper {
-	
+
 	/**
 	 * Adds the additionnal.
 	 *
