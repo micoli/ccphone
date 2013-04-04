@@ -39,9 +39,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -60,7 +62,6 @@ import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-import org.apache.log4j.Level;
 import org.micoli.commands.Command;
 import org.micoli.commands.CommandManager;
 import org.micoli.phone.ccphone.registrations.Registration;
@@ -77,6 +78,14 @@ import com.hazelcast.util.Base64;
 public class Main {
 	static {
 		System.setProperty("apple.awt.UIElement", "true");
+	}
+
+	public static void main(final String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new Main(args);
+			}
+		});
 	}
 
 	/** The event manager. */
@@ -104,14 +113,6 @@ public class Main {
 	 *
 	 * @param args the arguments
 	 */
-	public static void main(final String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new Main(args);
-			}
-		});
-	}
-
 	/**
 	 * Instantiates a new main.
 	 *
@@ -179,12 +180,6 @@ public class Main {
 			return;
 		}
 
-		/*
-		 * trayIcon.addActionListener(new ActionListener() { public void
-		 * actionPerformed(ActionEvent e) { JOptionPane.showMessageDialog(null,
-		 * "This dialog box is run from System Tray"); } });
-		 */
-
 		aboutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "This dialog box is run from the About menu item");
@@ -200,25 +195,45 @@ public class Main {
 	}
 
 	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
+	public synchronized String[] restart() {
+		try {
+			final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+			File currentJar;
+			currentJar = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+			/* is it a jar file? */
+			if (!currentJar.getName().endsWith(".jar"))
+				return new String[] { "Not Launched from a jar" };
+
+			/* Build command: java -jar application.jar */
+			final ArrayList<String> command = new ArrayList<String>();
+			command.add(javaBin);
+			command.add("-jar");
+			command.add(currentJar.getPath());
+
+			final ProcessBuilder builder = new ProcessBuilder(command);
+			builder.start();
+			System.exit(0);
+		} catch (URISyntaxException | IOException e) {
+			e.printStackTrace();
+		}
+		return new String[] { "Restarting" };
+	}
+
+	@Command(type = { Command.Type.GUI, Command.Type.SHELL })
 	public synchronized String[] setLogLevel(@Command("level") int level) {
 		switch(level){
 		case 0:
-			logger.getLogger().setLevel(Level.OFF);
+			logger.setLevel(Logger.Level.OFF);
 			break;
 		case 1:
-			logger.getLogger().setLevel(Level.FATAL);
+			logger.setLevel(Logger.Level.INFO);
 			break;
 		case 2:
-			logger.getLogger().setLevel(Level.ERROR);
+			logger.setLevel(Logger.Level.ERROR);
 			break;
 		case 3:
-			logger.getLogger().setLevel(Level.WARN);
-			break;
-		case 4:
-			logger.getLogger().setLevel(Level.INFO);
-			break;
-		case 5:
-			logger.getLogger().setLevel(Level.DEBUG);
+			logger.setLevel(Logger.Level.DEBUG);
 			break;
 		}
 		return new String[] { "ok" };
@@ -318,7 +333,7 @@ public class Main {
 
 	/**
 	 * Window closed.
-	 * 
+	 *
 	 * @param e
 	 *            the event
 	 */
