@@ -30,12 +30,31 @@ public class CommandManager {
 	public static HashMap<String, CommandContainer> listCommand = new HashMap<String, CommandContainer>();
 	public static ArrayList<String> listGUICommand = new ArrayList<String>();
 	public static ArrayList<String> listShellCommand = new ArrayList<String>();
+	private static CommandContainer authCommand = null;
+
+	private static CommandContainer bannerCommand = null;
 
 	public static String getStackTrace(Throwable aThrowable) {
 		final Writer result = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(result);
 		aThrowable.printStackTrace(printWriter);
 		return result.toString();
+	}
+
+	/**
+	 * @param loginCommand
+	 *            the loginCommand to set
+	 */
+	public static final void setAuthCommand(Object container, Method method) {
+		CommandManager.authCommand = new CommandContainer(method, container);
+	}
+
+	/**
+	 * @param bannerCommand
+	 *            the bannerCommand to set
+	 */
+	public static final void setBannerCommand(Object container, Method method) {
+		CommandManager.bannerCommand = new CommandContainer(method, container);
 	}
 
 	private static void addLine(String prefix,ArrayList<String> lines,String line){
@@ -93,16 +112,6 @@ public class CommandManager {
 			addLine("..", lines, String.format("Unknown shell command [%s], try help", commandName));
 		}
 		return lines;
-	}
-
-	public static boolean runLoginCommand(String args) {
-		String commands[] = args.split(" ");
-		if(commands.length==2){
-			if(commands[0].equals("root") && commands[1].equals("root")){
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static ArrayList<String> getCommandsHelp(String command) {
@@ -221,5 +230,28 @@ public class CommandManager {
 			}
 		}
 		return retval+"\n";
+	}
+
+	@SuppressWarnings("unchecked")
+	public static ArrayList<String> getBanner() {
+		if (CommandManager.bannerCommand != null) {
+			try {
+				return (ArrayList<String>) CommandManager.bannerCommand.getMethod().invoke(CommandManager.bannerCommand.getContainer());
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return new ArrayList<String>();
+	}
+
+	public static boolean authenticate(String user,String password) {
+		if (CommandManager.authCommand != null) {
+			try {
+				return (boolean) CommandManager.authCommand.getMethod().invoke(CommandManager.authCommand.getContainer(), user, password);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		return true;
 	}
 }

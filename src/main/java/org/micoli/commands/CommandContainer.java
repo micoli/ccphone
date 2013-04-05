@@ -10,6 +10,11 @@ public class CommandContainer {
 	private JSAP jsap;
 	private int nbArg;
 
+	public CommandContainer(Method method2, Object container2) {
+		container = container2;
+		method = method2;
+	}
+
 	public CommandContainer(Method method2, Object container2, JSAP jsap2, int nbArg2) {
 		container = container2;
 		method = method2;

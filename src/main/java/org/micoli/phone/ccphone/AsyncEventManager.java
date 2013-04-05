@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
@@ -38,7 +39,6 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import org.micoli.phone.ccphone.call.Call;
 import org.micoli.phone.ccphone.remote.VertX;
 import org.micoli.phone.tools.JsonMapper;
-import net.sourceforge.peers.Logger;
 
 
 /**

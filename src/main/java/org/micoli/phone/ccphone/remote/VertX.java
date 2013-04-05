@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.micoli.commands.CommandManager;
 import net.sourceforge.peers.Logger;
+
+import org.micoli.commands.CommandManager;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.buffer.Buffer;
@@ -139,6 +140,7 @@ public class VertX {
 
 		netServer = vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
 			public void handle(final NetSocket socket) {
+				writeArrayListSocket(socket, CommandManager.getBanner());
 				socket.write("> ");
 				socket.dataHandler(new Handler<Buffer>() {
 					public void handle(Buffer buffer) {
@@ -149,10 +151,15 @@ public class VertX {
 							if(logged.containsKey(socket.writeHandlerID)){
 								socket.write("Already Logged in\n");
 							}else{
-								if(CommandManager.runLoginCommand(commandStr.substring(commands[0].length()).trim())){
-									logged.put(socket.writeHandlerID,true);
-									socket.write("Logged in\n");
-								}else{
+								String rootArgs[] = commandStr.substring(commands[0].length()).trim().split(" ");
+								if (rootArgs.length == 2) {
+									if (CommandManager.authenticate(rootArgs[0], rootArgs[1])) {
+										logged.put(socket.writeHandlerID, true);
+										socket.write("Logged in\n");
+									} else {
+										socket.write("Can not Logged in\n");
+									}
+								} else {
 									socket.write("Can not Logged in\n");
 								}
 							}
@@ -182,6 +189,12 @@ public class VertX {
 		Iterator<String> iterator = lines.iterator();
 		while (iterator.hasNext()) {
 			socket.write(iterator.next()+"\n");
+		}
+	}
+
+	private static void writeArrayListSocket(NetSocket socket, String[] lines) {
+		for (int i = 0; i < lines.length; i++) {
+			socket.write(lines[i]+"\n");
 		}
 	}
 	/**

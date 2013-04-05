@@ -125,6 +125,12 @@ public class Main {
 		VertX.init(logger);
 
 		CommandManager.scan(this, logger);
+		try {
+			CommandManager.setBannerCommand(this, getClass().getMethod("getBanner"));
+			CommandManager.setAuthCommand(this, getClass().getMethod("authenticate", String.class, String.class));
+		} catch (NoSuchMethodException | SecurityException e1) {
+			e1.printStackTrace();
+		}
 
 		loadConfig();
 
@@ -137,8 +143,42 @@ public class Main {
 		}
 	}
 
+	public boolean authenticate(String user, String password) {
+		if (user.equals("root") && password.equals("root")) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+	public ArrayList<String> getBanner() {
+		ArrayList<String> banners = new ArrayList<>();
+		banners.add("--------------");
+		if (eventManager != null) {
+			banners.add(String.format("Domain : %s", eventManager.getUserAgent().getDomain().toString()));
+			if (eventManager.getUserAgent().getOutboundProxy() != null) {
+				banners.add(String.format("outbound proxy : %s", eventManager.getUserAgent().getOutboundProxy()));
+			}
+			banners.add(String.format("username : %s", eventManager.getUserAgent().getUserpart().toString()));
+			banners.add(String.format("rtp port : %s", eventManager.getUserAgent().getRtpPort()));
+			banners.add(String.format("sip port : %s", eventManager.getUserAgent().getSipPort()));
+			if (eventManager.getUserAgent().isRegistered()) {
+				banners.add("Registered");
+			} else {
+				banners.add("Not Registered");
+			}
+		}
+		banners.add("--------------");
+		return banners;
+	}
+
 	private void initSIP() {
 		logger.info("Init SIP");
+		if (eventManager != null) {
+			if (eventManager.getUserAgent().isRegistered()) {
+				eventManager.getUserAgent().close();
+			}
+		}
 		eventManager = new AsyncEventManager(Main.this, logger);
 		try {
 			eventManager.register();
